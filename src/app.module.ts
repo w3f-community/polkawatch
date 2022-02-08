@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
+import { GeoRegionController } from './app.controller';
+import { IndexQueryService } from './app.service';
 
 @Module({
   imports: [
@@ -14,7 +16,7 @@ import * as Joi from 'joi';
       }),
     }),
   ],
-  controllers: [],
-  providers: [],
+  controllers: [GeoRegionController],
+  providers: [IndexQueryService],
 })
 export class AppModule {}
