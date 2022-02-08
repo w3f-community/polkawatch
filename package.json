@@ -2,7 +2,7 @@
   "name": "live-query-server",
   "version": "0.0.1",
   "description": "Pokawatch Live Query Server",
-  "author": "",
+  "author": "Polkawatch team",
   "private": true,
   "license": "Apache 2.0",
   "scripts": {
@@ -22,8 +22,15 @@
   },
   "dependencies": {
     "@nestjs/common": "^8.0.0",
+    "@nestjs/config": "^1.1.6",
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
+    "@nestjs/platform-fastify": "^8.2.6",
+    "@nestjs/swagger": "^5.2.0",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.13.2",
+    "fastify-swagger": "^4.14.0",
+    "joi": "^17.6.0",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
     "rxjs": "^7.2.0"

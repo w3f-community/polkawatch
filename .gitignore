@@ -35,3 +35,9 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 .idea
+
+#environment
+.env
+
+#yarn-lock
+yarn.lock
