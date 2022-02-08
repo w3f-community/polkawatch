@@ -1,5 +1,8 @@
-import {Body, Controller, Logger, Post} from '@nestjs/common';
-import {BaseQueryParameters, GeoDistributionQueryDto} from './queryParameters.dtos';
+import { Body, Controller, Logger, Post } from '@nestjs/common';
+import {
+  BaseQueryParameters,
+  GeoDistributionQueryDto,
+} from './queryParameters.dtos';
 import { IndexQueryService } from './app.service';
 
 @Controller()
