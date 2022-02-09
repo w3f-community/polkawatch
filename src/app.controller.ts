@@ -3,7 +3,7 @@ import {
   BaseQueryParameters,
   GeoDistributionQueryDto,
 } from './queryParameters.dtos';
-import { IndexQueryService } from './app.service';
+import { IndexQueryService, QueryTemplate } from './app.service';
 
 @Controller()
 class BaseController {
@@ -11,9 +11,12 @@ class BaseController {
 
   constructor(protected queryService: IndexQueryService) {}
 
-  runQuery(parameters: BaseQueryParameters) {
+  runQuery(
+    parameters: BaseQueryParameters,
+    queryTemplate: QueryTemplate,
+  ) {
     this.logger.debug('Input is valid, running query');
-    return this.queryService.runQuery(parameters);
+    return this.queryService.runQuery(parameters, queryTemplate);
   }
 }
 
@@ -28,7 +31,17 @@ export class GeoRegionController extends BaseController {
     @Body()
     params: GeoDistributionQueryDto,
   ): Promise<any> {
-    this.logger.debug('POST /geo/region');
-    return super.runQuery(params);
+    return super.runQuery(params, this.queryTemplate);
   }
+
+  queryTemplate(params: GeoDistributionQueryDto) {
+    return {
+      query:{
+        match_all:{}
+      },
+      stored_fields:[]
+    }
+  }
+
+
 }
