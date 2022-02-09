@@ -36,12 +36,33 @@ export class GeoRegionController extends BaseController {
 
   queryTemplate(params: GeoDistributionQueryDto) {
     return {
-      query:{
-        match_all:{}
+      aggs: {
+        polkawatch: {
+          terms: {
+            field: 'validator_country_group_name',
+            order: {
+              reward: 'desc',
+            },
+            size: 10,
+          },
+          aggs: {
+            reward: {
+              sum: {
+                script: {
+                  source: "doc['reward'].value/10000000000.0\n",
+                  lang: 'painless',
+                },
+              },
+            },
+          },
+        },
       },
-      stored_fields:[]
-    }
+      size: 0,
+      query: {
+        bool: {
+          filter: { range: { era: { gte: params.StartingEra } } },
+        },
+      },
+    };
   }
-
-
 }
