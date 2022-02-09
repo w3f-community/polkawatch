@@ -19,10 +19,10 @@ async function bootstrap() {
   const configService = app.get(ConfigService);
 
   // // Get global prefix from .env
-  const globalPrefix: string = configService.get('GLOBAL_PREFIX');
+  const globalPrefix: string = configService.get('LQS_GLOBAL_PREFIX');
 
   // Get port number from .env file
-  const port: number = configService.get('PORT');
+  const port: number = configService.get('LQS_PORT');
 
   // Versioning system
   app.enableVersioning({
