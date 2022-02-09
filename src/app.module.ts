@@ -16,7 +16,7 @@ import {
         NODE_ENV: Joi.string()
           .valid('development', 'production', 'test')
           .default('development'),
-        PORT: Joi.number().default(3000),
+        LQS_PORT: Joi.number().default(3000),
       }),
     }),
     ElasticsearchModule.register({
