@@ -4,7 +4,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class BaseQueryParameters {}
 
 export class GeoDistributionQueryDto extends BaseQueryParameters {
-  @ApiProperty({ description: 'this is a endpoint' })
+  @ApiProperty()
   @IsInt()
   StartingEra: number;
 }
