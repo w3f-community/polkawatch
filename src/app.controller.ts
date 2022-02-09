@@ -3,8 +3,14 @@ import {
   BaseQueryParameters,
   GeoDistributionQueryDto,
 } from './queryParameters.dtos';
-import {IndexQueryService, QueryResponseTransformer, QueryTemplate} from './app.service';
-import {BaseQueryResponse, DotRewardsByRegion} from "./queryReponse.dtos";
+import {
+  IndexQueryService,
+  QueryResponseTransformer,
+  QueryTemplate,
+} from './app.service';
+import { BaseQueryResponse, DotRewardsByRegion } from './queryReponse.dtos';
+import {AggregationsFiltersAggregate} from "@elastic/elasticsearch/api/types";
+import {plainToClass} from "class-transformer";
 
 @Controller()
 class BaseController {
@@ -36,12 +42,26 @@ export class GeoRegionController extends BaseController {
   async post(
     @Body()
     params: GeoDistributionQueryDto,
-  ): Promise<DotRewardsByRegion> {
+  ): Promise<BaseQueryResponse> {
     return super.runQuery(
       params,
       this.queryTemplate,
       this.queryResponseTransformer,
     );
+  }
+
+  queryResponseTransformer(rawResponse) {
+    const aggregations = rawResponse.body.aggregations as Record<
+      string,
+      AggregationsFiltersAggregate
+    >;
+    return plainToClass(
+      DotRewardsByRegion,
+      aggregations['polkawatch'].buckets,
+      {
+        excludeExtraneousValues: true,
+      },
+    ) as unknown as DotRewardsByRegion[];
   }
 
   queryTemplate(params: GeoDistributionQueryDto) {
