@@ -3,7 +3,8 @@ import {
   BaseQueryParameters,
   GeoDistributionQueryDto,
 } from './queryParameters.dtos';
-import { IndexQueryService, QueryTemplate } from './app.service';
+import {IndexQueryService, QueryResponseTransformer, QueryTemplate} from './app.service';
+import {BaseQueryResponse, DotRewardsByRegion} from "./queryReponse.dtos";
 
 @Controller()
 class BaseController {
@@ -14,9 +15,14 @@ class BaseController {
   runQuery(
     parameters: BaseQueryParameters,
     queryTemplate: QueryTemplate,
+    queryResponseTransformer: QueryResponseTransformer,
   ) {
     this.logger.debug('Input is valid, running query');
-    return this.queryService.runQuery(parameters, queryTemplate);
+    return this.queryService.runQuery(
+      parameters,
+      queryTemplate,
+      queryResponseTransformer,
+    );
   }
 }
 
@@ -30,8 +36,12 @@ export class GeoRegionController extends BaseController {
   async post(
     @Body()
     params: GeoDistributionQueryDto,
-  ): Promise<any> {
-    return super.runQuery(params, this.queryTemplate);
+  ): Promise<DotRewardsByRegion> {
+    return super.runQuery(
+      params,
+      this.queryTemplate,
+      this.queryResponseTransformer,
+    );
   }
 
   queryTemplate(params: GeoDistributionQueryDto) {
