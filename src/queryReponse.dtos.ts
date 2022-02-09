@@ -1,9 +1,9 @@
 import { Expose, Transform } from 'class-transformer';
-import { ApiAcceptedResponse } from '@nestjs/swagger';
+import { ApiResponseProperty } from '@nestjs/swagger';
 
 
 /**
- * All quires will have as a response either a record all an array of records
+ * All queries will have as a response either a record or an array of records
  */
 export type QueryResponse = QueryResponseRecord | Array<QueryResponseRecord>;
 
@@ -16,11 +16,16 @@ export type QueryResponseRecord = DotRewardsByRegion;
  * Rewards by Region
  */
 
-@ApiAcceptedResponse()
 export class DotRewardsByRegion {
+
+  @ApiResponseProperty()
   @Expose({ name: 'key' })
   Region: string;
+
+  @ApiResponseProperty()
   @Transform(({ value }) => value.value, { toClassOnly: true })
   @Expose({ name: 'reward' })
-  DotRewards: string;
+  DotRewards: number;
 }
+
+

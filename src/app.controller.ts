@@ -1,6 +1,7 @@
 import { Body, Controller, Logger, Post } from '@nestjs/common';
+import { ApiOkResponse } from '@nestjs/swagger';
 import {
-  BaseQueryParameters,
+  QueryParameters,
   GeoDistributionQueryDto,
 } from './queryParameters.dtos';
 import {
@@ -19,7 +20,7 @@ class BaseController {
   constructor(protected queryService: IndexQueryService) {}
 
   runQuery(
-    parameters: BaseQueryParameters,
+    parameters: QueryParameters,
     queryTemplate: QueryTemplate,
     queryResponseTransformer: QueryResponseTransformer,
   ) {
@@ -39,6 +40,11 @@ export class GeoRegionController extends BaseController {
   }
 
   @Post('geo/region')
+  @ApiOkResponse({
+    description: "The distribution of DOT Rewards per Region",
+    type: DotRewardsByRegion,
+    isArray: true
+  })
   async post(
     @Body()
     params: GeoDistributionQueryDto,
@@ -72,13 +78,13 @@ export class GeoRegionController extends BaseController {
             order: {
               reward: 'desc',
             },
-            size: 10,
+            size: params.TopResults,
           },
           aggs: {
             reward: {
               sum: {
                 script: {
-                  source: "doc['reward'].value/10000000000.0\n",
+                  source: "doc['reward'].value/10000000000.0",
                   lang: 'painless',
                 },
               },
@@ -89,7 +95,13 @@ export class GeoRegionController extends BaseController {
       size: 0,
       query: {
         bool: {
-          filter: { range: { era: { gte: params.StartingEra } } },
+          filter: {
+            range: {
+              era: {
+                gte: params.StartingEra
+              }
+            }
+          },
         },
       },
     };
