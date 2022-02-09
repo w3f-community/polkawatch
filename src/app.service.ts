@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { BaseQueryParameters } from './queryParameters.dtos';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
-import { ElasticQueryTemplate } from './app.controller';
+
+
+export type QueryTemplate = (params: BaseQueryParameters) => any ;
 
 @Injectable()
 export class IndexQueryService {
@@ -9,12 +11,12 @@ export class IndexQueryService {
 
   async runQuery(
     parameters: BaseQueryParameters,
-    queryTemplate: ElasticQueryTemplate,
+    queryTemplate: QueryTemplate,
   ): Promise<any> {
     return this.elasticsearchService.search({
       index: 'pw_reward',
       track_total_hits: true,
-      body: queryTemplate,
+      body: queryTemplate(parameters),
     });
   }
 }
