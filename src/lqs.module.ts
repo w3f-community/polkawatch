@@ -3,7 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
 import { IndexQueryService } from './lqs.index.service';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
-import QueryConstrollers from './queries';
+import QueryControllers from './queries';
 
 @Module({
   imports: [
@@ -30,7 +30,7 @@ import QueryConstrollers from './queries';
       inject: [ConfigService],
     }),
   ],
-  controllers: QueryConstrollers,
+  controllers: QueryControllers,
   providers: [IndexQueryService],
 })
 export class AppModule {}

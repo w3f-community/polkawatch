@@ -38,7 +38,6 @@ export class GeoRegionController extends BaseController {
   ): Array<DotRewardsByRegion> {
     const buckets = indexResponse.body.aggregations['polkawatch']
       .buckets as AggregatedIndexData;
-    return indexResponse;
     return plainToInstance(DotRewardsByRegion, buckets, {
       excludeExtraneousValues: true,
     });
