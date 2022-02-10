@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { QueryParameters } from './queryParameters.dtos';
+import { QueryParameters } from './queries/query.parameters.dtos';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
-import { QueryResponse } from './queryReponse.dtos';
+import { QueryResponse } from './queries/query.responses.dtos';
 import { ApiResponse } from '@elastic/elasticsearch';
 import { AggregationsFiltersAggregate } from '@elastic/elasticsearch/api/types';
 
