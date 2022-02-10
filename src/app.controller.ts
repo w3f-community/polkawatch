@@ -1,5 +1,5 @@
 import { Body, Controller, Logger, Post } from '@nestjs/common';
-import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
   QueryParameters,
   GeoDistributionQueryDto,
@@ -33,6 +33,7 @@ class BaseController {
   }
 }
 
+@ApiTags('geography')
 @Controller()
 export class GeoRegionController extends BaseController {
   constructor(protected queryService: IndexQueryService) {
