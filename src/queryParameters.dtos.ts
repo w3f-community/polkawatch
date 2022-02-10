@@ -1,10 +1,30 @@
-import { IsInt } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNumber, IsOptional } from 'class-validator';
 
-export class BaseQueryParameters {}
+/**
+ * All possible query parameters.
+ */
+export type QueryParameters = GeoDistributionQueryDto;
 
-export class GeoDistributionQueryDto extends BaseQueryParameters {
-  @ApiProperty()
-  @IsInt()
+export class GeoDistributionQueryDto {
+  @IsOptional()
+  @IsNumber()
+  @ApiProperty({
+    description: 'Limit the dataset by starting Era',
+    minimum: 1,
+    default: 0,
+    example: 510,
+    required: false,
+  })
   StartingEra: number;
+
+  @IsOptional()
+  @IsNumber()
+  @ApiProperty({
+    description: 'Return only the Top N Results',
+    minimum: 1,
+    default: 10,
+    required: false,
+  })
+  TopResults: number;
 }

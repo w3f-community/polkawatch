@@ -1,9 +1,17 @@
 import { Body, Controller, Logger, Post } from '@nestjs/common';
+import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import {
-  BaseQueryParameters,
+  QueryParameters,
   GeoDistributionQueryDto,
 } from './queryParameters.dtos';
-import { IndexQueryService, QueryTemplate } from './app.service';
+import {
+  IndexQueryService,
+  QueryResponseTransformer,
+  QueryTemplate,
+  AggregatedIndexData,
+} from './app.service';
+import { DotRewardsByRegion } from './queryReponse.dtos';
+import { plainToInstance } from 'class-transformer';
 
 @Controller()
 class BaseController {
@@ -12,14 +20,20 @@ class BaseController {
   constructor(protected queryService: IndexQueryService) {}
 
   runQuery(
-    parameters: BaseQueryParameters,
+    parameters: QueryParameters,
     queryTemplate: QueryTemplate,
+    queryResponseTransformer: QueryResponseTransformer,
   ) {
     this.logger.debug('Input is valid, running query');
-    return this.queryService.runQuery(parameters, queryTemplate);
+    return this.queryService.runQuery(
+      parameters,
+      queryTemplate,
+      queryResponseTransformer,
+    );
   }
 }
 
+@ApiTags('geography')
 @Controller()
 export class GeoRegionController extends BaseController {
   constructor(protected queryService: IndexQueryService) {
@@ -27,21 +41,71 @@ export class GeoRegionController extends BaseController {
   }
 
   @Post('geo/region')
+  @ApiOperation({
+    description: 'Get the distribution of DOT Rewards per Region',
+  })
+  @ApiOkResponse({
+    description: 'The distribution of DOT Rewards per Region',
+    type: DotRewardsByRegion,
+    isArray: true,
+  })
   async post(
     @Body()
     params: GeoDistributionQueryDto,
-  ): Promise<any> {
-    return super.runQuery(params, this.queryTemplate);
+  ): Promise<Array<DotRewardsByRegion>> {
+    return (await super.runQuery(
+      params,
+      this.queryTemplate,
+      this.queryResponseTransformer,
+    )) as Array<DotRewardsByRegion>;
+  }
+
+  queryResponseTransformer(
+    indexResponse,
+  ): Array<DotRewardsByRegion> {
+    const buckets = indexResponse.body.aggregations['polkawatch']
+      .buckets as AggregatedIndexData;
+    return indexResponse;
+    return plainToInstance(DotRewardsByRegion, buckets, {
+      excludeExtraneousValues: true,
+    });
   }
 
   queryTemplate(params: GeoDistributionQueryDto) {
     return {
-      query:{
-        match_all:{}
+      aggs: {
+        polkawatch: {
+          terms: {
+            field: 'validator_country_group_name',
+            order: {
+              reward: 'desc',
+            },
+            size: params.TopResults,
+          },
+          aggs: {
+            reward: {
+              sum: {
+                script: {
+                  source: "doc['reward'].value/10000000000.0",
+                  lang: 'painless',
+                },
+              },
+            },
+          },
+        },
       },
-      stored_fields:[]
-    }
+      size: 0,
+      query: {
+        bool: {
+          filter: {
+            range: {
+              era: {
+                gte: params.StartingEra,
+              },
+            },
+          },
+        },
+      },
+    };
   }
-
-
 }
