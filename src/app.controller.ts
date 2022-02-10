@@ -8,23 +8,10 @@ import {
   IndexQueryService,
   QueryResponseTransformer,
   QueryTemplate,
+  AggregatedIndexData,
 } from './app.service';
 import { DotRewardsByRegion } from './queryReponse.dtos';
 import { plainToInstance } from 'class-transformer';
-import { ApiResponse } from '@elastic/elasticsearch';
-import {
-  AggregationsFiltersAggregate,
-  AggregationsTermsAggregateBase,
-} from '@elastic/elasticsearch/api/types';
-
-interface ApiResponseFilterAggregate extends ApiResponse {
-  body: {
-    aggregations: Record<
-      string,
-      AggregationsTermsAggregateBase<AggregationsFiltersAggregate>
-    >;
-  };
-}
 
 @Controller()
 class BaseController {
@@ -73,10 +60,11 @@ export class GeoRegionController extends BaseController {
   }
 
   queryResponseTransformer(
-    rawResponse: ApiResponseFilterAggregate,
+    indexResponse,
   ): Array<DotRewardsByRegion> {
-    const buckets = rawResponse.body.aggregations['polkawatch']
-      .buckets as AggregationsFiltersAggregate[];
+    const buckets = indexResponse.body.aggregations['polkawatch']
+      .buckets as AggregatedIndexData;
+    return indexResponse;
     return plainToInstance(DotRewardsByRegion, buckets, {
       excludeExtraneousValues: true,
     });
