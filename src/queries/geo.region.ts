@@ -1,37 +1,10 @@
-import { Body, Controller, Logger, Post } from '@nestjs/common';
+import { Body, Controller, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
-import {
-  QueryParameters,
-  GeoDistributionQueryDto,
-} from './queryParameters.dtos';
-import {
-  IndexQueryService,
-  QueryResponseTransformer,
-  QueryTemplate,
-  AggregatedIndexData,
-} from './app.service';
-import { DotRewardsByRegion } from './queryReponse.dtos';
+import { BaseController } from '../lqs.controller';
+import { AggregatedIndexData, IndexQueryService } from '../lqs.index.service';
+import { DotRewardsByRegion } from './query.responses.dtos';
+import { GeoDistributionQueryDto } from './query.parameters.dtos';
 import { plainToInstance } from 'class-transformer';
-
-@Controller()
-class BaseController {
-  readonly logger = new Logger(BaseController.name);
-
-  constructor(protected queryService: IndexQueryService) {}
-
-  runQuery(
-    parameters: QueryParameters,
-    queryTemplate: QueryTemplate,
-    queryResponseTransformer: QueryResponseTransformer,
-  ) {
-    this.logger.debug('Input is valid, running query');
-    return this.queryService.runQuery(
-      parameters,
-      queryTemplate,
-      queryResponseTransformer,
-    );
-  }
-}
 
 @ApiTags('geography')
 @Controller()
@@ -51,7 +24,7 @@ export class GeoRegionController extends BaseController {
   })
   async post(
     @Body()
-    params: GeoDistributionQueryDto,
+      params: GeoDistributionQueryDto,
   ): Promise<Array<DotRewardsByRegion>> {
     return (await super.runQuery(
       params,

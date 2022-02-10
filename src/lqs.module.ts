@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
-import { GeoRegionController } from './app.controller';
-import { IndexQueryService } from './app.service';
+import { IndexQueryService } from './lqs.index.service';
 import { ElasticsearchModule } from '@nestjs/elasticsearch';
+import QueryConstrollers from './queries';
 
 @Module({
   imports: [
@@ -30,7 +30,7 @@ import { ElasticsearchModule } from '@nestjs/elasticsearch';
       inject: [ConfigService],
     }),
   ],
-  controllers: [GeoRegionController],
+  controllers: QueryConstrollers,
   providers: [IndexQueryService],
 })
 export class AppModule {}
