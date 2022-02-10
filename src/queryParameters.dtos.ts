@@ -13,6 +13,7 @@ export class GeoDistributionQueryDto {
     description: 'Limit the dataset by starting Era',
     minimum: 1,
     default: 0,
+    example: 510,
     required: false,
   })
   StartingEra: number;

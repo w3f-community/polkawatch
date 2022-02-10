@@ -16,11 +16,11 @@ export type QueryResponseRecord = DotRewardsByRegion;
  */
 
 export class DotRewardsByRegion {
-  @ApiResponseProperty({ example: 'North America' })
+  @ApiResponseProperty()
   @Expose({ name: 'key' })
   Region: string;
 
-  @ApiResponseProperty({ example: 562676.1011139761 })
+  @ApiResponseProperty()
   @Transform(({ value }) => value.value, { toClassOnly: true })
   @Expose({ name: 'reward' })
   DotRewards: number;
