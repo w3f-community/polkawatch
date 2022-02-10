@@ -38,7 +38,7 @@ async function bootstrap() {
   // Swagger setup
   const swaggerConfig = new DocumentBuilder()
     .setTitle('Polkawatch Live Query Sever')
-    .setDescription('Nestjs api for Polkawatch elastic indexer')
+    .setDescription('REST API for Polkawatch indexer')
     .setVersion('1.0')
     .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);

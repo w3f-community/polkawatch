@@ -1,10 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { QueryParameters } from './queryParameters.dtos';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
-import {QueryResponse} from "./queryReponse.dtos";
+import { QueryResponse } from './queryReponse.dtos';
+import { ApiResponse } from '@elastic/elasticsearch';
 
-export type QueryResponseTransformer = (rawResponse: any) => QueryResponse ;
-export type QueryTemplate = (params: QueryParameters) => any ;
+export type QueryResponseTransformer = (rawResponse: any) => QueryResponse;
+export type QueryTemplate = (params: QueryParameters) => any;
 
 @Injectable()
 export class IndexQueryService {
@@ -15,7 +16,7 @@ export class IndexQueryService {
     queryTemplate: QueryTemplate,
     resultTransformer: QueryResponseTransformer,
   ): Promise<QueryResponse> {
-    const rawResponse = await this.elasticsearchService.search({
+    const rawResponse: ApiResponse = await this.elasticsearchService.search({
       index: 'pw_reward',
       track_total_hits: true,
       body: queryTemplate(parameters),

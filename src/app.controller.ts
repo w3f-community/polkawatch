@@ -1,5 +1,5 @@
 import { Body, Controller, Logger, Post } from '@nestjs/common';
-import { ApiOkResponse } from '@nestjs/swagger';
+import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
 import {
   QueryParameters,
   GeoDistributionQueryDto,
@@ -10,8 +10,21 @@ import {
   QueryTemplate,
 } from './app.service';
 import { DotRewardsByRegion } from './queryReponse.dtos';
-
 import { plainToInstance } from 'class-transformer';
+import { ApiResponse } from '@elastic/elasticsearch';
+import {
+  AggregationsFiltersAggregate,
+  AggregationsTermsAggregateBase,
+} from '@elastic/elasticsearch/api/types';
+
+interface ApiResponseFilterAggregate extends ApiResponse {
+  body: {
+    aggregations: Record<
+      string,
+      AggregationsTermsAggregateBase<AggregationsFiltersAggregate>
+    >;
+  };
+}
 
 @Controller()
 class BaseController {
@@ -40,33 +53,33 @@ export class GeoRegionController extends BaseController {
   }
 
   @Post('geo/region')
+  @ApiOperation({
+    description: 'Get the distribution of DOT Rewards per Region',
+  })
   @ApiOkResponse({
-    description: "The distribution of DOT Rewards per Region",
+    description: 'The distribution of DOT Rewards per Region',
     type: DotRewardsByRegion,
-    isArray: true
+    isArray: true,
   })
   async post(
     @Body()
     params: GeoDistributionQueryDto,
   ): Promise<Array<DotRewardsByRegion>> {
-    return super.runQuery(
+    return (await super.runQuery(
       params,
       this.queryTemplate,
       this.queryResponseTransformer,
-    ) as Promise<Array<DotRewardsByRegion>>;
+    )) as Array<DotRewardsByRegion>;
   }
 
-  queryResponseTransformer(rawResponse): Array<DotRewardsByRegion> {
-
-    let buckets=rawResponse.body.aggregations['polkawatch'].buckets as Array<any>;
-
-    return plainToInstance(
-      DotRewardsByRegion,
-      buckets,
-      {
-        excludeExtraneousValues: true
-      }
-    );
+  queryResponseTransformer(
+    rawResponse: ApiResponseFilterAggregate,
+  ): Array<DotRewardsByRegion> {
+    const buckets = rawResponse.body.aggregations['polkawatch']
+      .buckets as AggregationsFiltersAggregate[];
+    return plainToInstance(DotRewardsByRegion, buckets, {
+      excludeExtraneousValues: true,
+    });
   }
 
   queryTemplate(params: GeoDistributionQueryDto) {
@@ -98,9 +111,9 @@ export class GeoRegionController extends BaseController {
           filter: {
             range: {
               era: {
-                gte: params.StartingEra
-              }
-            }
+                gte: params.StartingEra,
+              },
+            },
           },
         },
       },
