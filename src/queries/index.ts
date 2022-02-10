@@ -1,4 +1,4 @@
-import {GeoRegionController} from './geo.region';
+import {GeoRegionController} from './controller.geo.region';
 
 export default [
   GeoRegionController
