@@ -19,19 +19,21 @@ export type AggregatedIndexData = AggregationsFiltersAggregate[];
 
 @Injectable()
 export class IndexQueryService {
-  constructor(private readonly elasticsearchService: ElasticsearchService) {}
+    constructor(private readonly elasticsearchService: ElasticsearchService) {
+        // do nothing.
+    }
 
-  async runQuery(
-    parameters: QueryParameters,
-    queryTemplate: QueryTemplate,
-    resultTransformer: QueryResponseTransformer,
-  ): Promise<QueryResponse> {
-    const rawResponse: ApiResponse = await this.elasticsearchService.search({
-      index: 'pw_reward',
-      track_total_hits: true,
-      body: queryTemplate(parameters),
-    });
+    async runQuery(
+        parameters: QueryParameters,
+        queryTemplate: QueryTemplate,
+        resultTransformer: QueryResponseTransformer,
+    ): Promise<QueryResponse> {
+        const rawResponse: ApiResponse = await this.elasticsearchService.search({
+            index: 'pw_reward',
+            track_total_hits: true,
+            body: queryTemplate(parameters),
+        });
 
-    return resultTransformer(rawResponse);
-  }
+        return resultTransformer(rawResponse);
+    }
 }

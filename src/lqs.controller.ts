@@ -1,9 +1,9 @@
 import { Controller, Logger } from '@nestjs/common';
 import { QueryParameters } from './queries/query.parameters.dtos';
 import {
-  IndexQueryService,
-  QueryResponseTransformer,
-  QueryTemplate,
+    IndexQueryService,
+    QueryResponseTransformer,
+    QueryTemplate,
 } from './lqs.index.service';
 
 
@@ -20,20 +20,22 @@ import {
 
 @Controller()
 export class BaseController {
-  readonly logger = new Logger(BaseController.name);
+    readonly logger = new Logger(BaseController.name);
 
-  constructor(protected queryService: IndexQueryService) {}
+    constructor(protected queryService: IndexQueryService) {
+        // do nothing.
+    }
 
-  runQuery(
-    parameters: QueryParameters,
-    queryTemplate: QueryTemplate,
-    queryResponseTransformer: QueryResponseTransformer,
-  ) {
-    this.logger.debug('Input is valid, running query');
-    return this.queryService.runQuery(
-      parameters,
-      queryTemplate,
-      queryResponseTransformer,
-    );
-  }
+    runQuery(
+        parameters: QueryParameters,
+        queryTemplate: QueryTemplate,
+        queryResponseTransformer: QueryResponseTransformer,
+    ) {
+        this.logger.debug('Input is valid, running query');
+        return this.queryService.runQuery(
+            parameters,
+            queryTemplate,
+            queryResponseTransformer,
+        );
+    }
 }

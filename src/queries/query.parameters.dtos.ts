@@ -10,21 +10,21 @@ export class GeoDistributionQueryDto {
   @IsOptional()
   @IsNumber()
   @ApiProperty({
-    description: 'Limit the dataset by starting Era',
-    minimum: 1,
-    default: 0,
-    example: 510,
-    required: false,
+      description: 'Limit the dataset by starting Era',
+      minimum: 1,
+      default: 0,
+      example: 510,
+      required: false,
   })
-  StartingEra: number;
+      StartingEra: number;
 
   @IsOptional()
   @IsNumber()
   @ApiProperty({
-    description: 'Return only the Top N Results',
-    minimum: 1,
-    default: 10,
-    required: false,
+      description: 'Return only the Top N Results',
+      minimum: 1,
+      default: 10,
+      required: false,
   })
-  TopResults: number;
+      TopResults: number;
 }

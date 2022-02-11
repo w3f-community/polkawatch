@@ -18,10 +18,10 @@ export type QueryResponseRecord = DotRewardsByRegion;
 export class DotRewardsByRegion {
   @ApiResponseProperty()
   @Expose({ name: 'key' })
-  Region: string;
+      Region: string;
 
   @ApiResponseProperty()
   @Transform(({ value }) => value.value, { toClassOnly: true })
   @Expose({ name: 'reward' })
-  DotRewards: number;
+      DotRewards: number;
 }
