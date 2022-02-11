@@ -1,5 +1,5 @@
-import {GeoRegionController} from './controller.geo.region';
+import { GeoRegionController } from './controller.geo.region';
 
 export default [
-  GeoRegionController
+    GeoRegionController,
 ];
