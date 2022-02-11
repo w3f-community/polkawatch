@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../lqs.controller';
 import { AggregatedIndexData, IndexQueryService } from '../lqs.index.service';
@@ -22,6 +22,7 @@ export class GeoRegionController extends BaseController {
     type: DotRewardsByRegion,
     isArray: true,
   })
+  @HttpCode(HttpStatus.OK)
   async post(
     @Body()
       params: GeoDistributionQueryDto,
