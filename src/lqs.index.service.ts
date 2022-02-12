@@ -28,12 +28,16 @@ export class IndexQueryService {
         queryTemplate: QueryTemplate,
         resultTransformer: QueryResponseTransformer,
     ): Promise<QueryResponse> {
-        const rawResponse: ApiResponse = await this.elasticsearchService.search({
+        const rawResponse: ApiResponse = await this.doSearch(this.elasticsearchService, {
             index: 'pw_reward',
             track_total_hits: true,
             body: queryTemplate(parameters),
         });
 
         return resultTransformer(rawResponse);
+    }
+
+    async doSearch(elasticsearchService, parameters){
+        return elasticsearchService.search(parameters);
     }
 }
