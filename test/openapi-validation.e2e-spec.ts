@@ -3,7 +3,7 @@ import * as request from 'supertest';
 import { AppModule } from '../src/lqs.module';
 import jestOpenAPI from 'jest-openapi';
 import { IndexQueryService } from '../src/lqs.index.service';
-import {configure} from '../src/main';
+import {configure} from '../src/lqs.config';
 
 import {loadFixture,saveFixture} from './regression.tools';
 
