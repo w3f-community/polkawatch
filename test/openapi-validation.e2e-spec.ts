@@ -91,8 +91,5 @@ describe('LQS end-to-end testing', () => {
                   expect(response.statusCode).toBe(400);
               });
         });
-
-
-
     });
 });
