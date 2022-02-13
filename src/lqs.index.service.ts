@@ -37,7 +37,7 @@ export class IndexQueryService {
         return resultTransformer(rawResponse);
     }
 
-    async doSearch(elasticsearchService, parameters){
+    async doSearch(elasticsearchService, parameters) {
         return elasticsearchService.search(parameters);
     }
 }

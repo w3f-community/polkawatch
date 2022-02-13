@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './lqs.module';
 import { ConfigService } from '@nestjs/config';
 
-import {configure} from './lqs.config';
+import { configure } from './lqs.config';
 
 import {
     FastifyAdapter,

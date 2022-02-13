@@ -11,33 +11,33 @@ import { OpenAPI } from 'openapi-types';
  *
  * @param app
  */
-export function configure(app, setupSwaggerModule=true): OpenAPI.Document{
+export function configure(app, setupSwaggerModule = true): OpenAPI.Document {
 
-  // Makes .env available
-  const configService = app.get(ConfigService);
+    // Makes .env available
+    const configService = app.get(ConfigService);
 
-  // // Get global prefix from .env
-  const globalPrefix: string = configService.get('LQS_GLOBAL_PREFIX');
+    // // Get global prefix from .env
+    const globalPrefix: string = configService.get('LQS_GLOBAL_PREFIX');
 
-  // Versioning system
-  app.enableVersioning({
-    type: VersioningType.URI,
-  });
+    // Versioning system
+    app.enableVersioning({
+        type: VersioningType.URI,
+    });
 
-  // Set global prefix
-  app.setGlobalPrefix(globalPrefix);
+    // Set global prefix
+    app.setGlobalPrefix(globalPrefix);
 
-  // Enable validation pipeline globally
-  app.useGlobalPipes(new ValidationPipe());
+    // Enable validation pipeline globally
+    app.useGlobalPipes(new ValidationPipe());
 
-  // Swagger setup
-  const swaggerConfig = new DocumentBuilder()
-    .setTitle('Polkawatch Live Query Sever')
-    .setDescription('REST API for Polkawatch indexer')
-    .setVersion('1.0')
-    .build();
-  const document = SwaggerModule.createDocument(app, swaggerConfig);
-  if(setupSwaggerModule) SwaggerModule.setup(globalPrefix, app, document);
+    // Swagger setup
+    const swaggerConfig = new DocumentBuilder()
+        .setTitle('Polkawatch Live Query Sever')
+        .setDescription('REST API for Polkawatch indexer')
+        .setVersion('1.0')
+        .build();
+    const document = SwaggerModule.createDocument(app, swaggerConfig);
+    if(setupSwaggerModule) SwaggerModule.setup(globalPrefix, app, document);
 
-  return document as OpenAPI.Document;
+    return document as OpenAPI.Document;
 }
