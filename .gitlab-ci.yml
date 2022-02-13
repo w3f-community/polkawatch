@@ -7,4 +7,5 @@ build nestjs app:
     - yarn install
     - yarn lint:test
     - yarn test
+    - yarn test:e2e:regression
     - yarn build
