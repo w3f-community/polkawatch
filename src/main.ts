@@ -1,8 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './lqs.module';
 import { ConfigService } from '@nestjs/config';
-import { VersioningType, ValidationPipe } from '@nestjs/common';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
+import { configure } from './lqs.config';
+
 import {
     FastifyAdapter,
     NestFastifyApplication,
@@ -15,35 +16,9 @@ async function bootstrap() {
         new FastifyAdapter(),
     );
 
-    // Makes .env available
-    const configService = app.get(ConfigService);
+    configure(app);
 
-    // // Get global prefix from .env
-    const globalPrefix: string = configService.get('LQS_GLOBAL_PREFIX');
-
-    // Get port number from .env file
-    const port: number = configService.get('LQS_PORT');
-
-    // Versioning system
-    app.enableVersioning({
-        type: VersioningType.URI,
-    });
-
-    // Set global prefix
-    app.setGlobalPrefix(globalPrefix);
-
-    // Enable validation pipeline globally
-    app.useGlobalPipes(new ValidationPipe());
-
-    // Swagger setup
-    const swaggerConfig = new DocumentBuilder()
-        .setTitle('Polkawatch Live Query Sever')
-        .setDescription('REST API for Polkawatch indexer')
-        .setVersion('1.0')
-        .build();
-    const document = SwaggerModule.createDocument(app, swaggerConfig);
-    SwaggerModule.setup(globalPrefix, app, document);
-
-    await app.listen(port);
+    await app.listen(app.get(ConfigService).get('LQS_PORT'));
 }
+
 bootstrap();
