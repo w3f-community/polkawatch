@@ -1,10 +1,7 @@
 {
-  "name": "live-query-server",
-  "version": "0.0.1",
-  "description": "Pokawatch Live Query Server",
-  "author": "Polkawatch team",
+  "name": "lqs",
+  "version": "0.1.0",
   "private": true,
-  "license": "Apache 2.0",
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",
