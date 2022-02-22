@@ -4,9 +4,13 @@ import { IsNumber, IsOptional } from 'class-validator';
 /**
  * All possible query parameters.
  */
-export type QueryParameters = GeoDistributionQueryDto;
+export type QueryParameters = RewardDistributionQueryDto;
 
-export class GeoDistributionQueryDto {
+
+/**
+ * Query parameters for reward distribution queries
+ */
+export class RewardDistributionQueryDto {
   @IsOptional()
   @IsNumber()
   @ApiProperty({

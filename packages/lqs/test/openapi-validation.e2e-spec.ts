@@ -45,8 +45,8 @@ describe('LQS end-to-end testing', () => {
         httpServer = app.getHttpServer();
     });
 
-    describe('Geo Region Test', () => {
-        it('Working Request 1', async () => {
+    describe('E2E API Test', () => {
+        it('Geo Region', async () => {
             await request(httpServer)
                 .post('/lqs/geo/region')
                 .send({ StartingEra: 499, TopResults: 10 })
@@ -55,18 +55,27 @@ describe('LQS end-to-end testing', () => {
                     expect(response).toSatisfyApiSpec();
                 });
         });
-        it('Working Request 2', async () => {
+        it('Get Country', async () => {
             await request(httpServer)
-                .post('/lqs/geo/region')
+                .post('/lqs/geo/country')
                 .send({ StartingEra: 501, TopResults: 5 })
                 .then(async (response) => {
                     expect(response.statusCode).toBe(200);
                     expect(response).toSatisfyApiSpec();
                 });
         });
-        it('Working Request 3', async () => {
+        it('Network Provider', async () => {
             await request(httpServer)
-                .post('/lqs/geo/region')
+                .post('/lqs/network/provider')
+                .send({ StartingEra: 500, TopResults: 3 })
+                .then(async (response) => {
+                    expect(response.statusCode).toBe(200);
+                    expect(response).toSatisfyApiSpec();
+                });
+        });
+        it('Validator Group', async () => {
+            await request(httpServer)
+                .post('/lqs/validator/group')
                 .send({ StartingEra: 500, TopResults: 3 })
                 .then(async (response) => {
                     expect(response.statusCode).toBe(200);

@@ -2,35 +2,35 @@ import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../lqs.controller';
 import { AggregatedIndexData, IndexQueryService } from '../lqs.index.service';
-import { RewardsByRegion } from './query.responses.dtos';
+import { RewardsByValidationGroup } from './query.responses.dtos';
 import { RewardDistributionQueryDto } from './query.parameters.dtos';
 import { plainToInstance } from 'class-transformer';
 
-@ApiTags('geography')
+@ApiTags('validator')
 @Controller()
-export class GeoRegionController extends BaseController {
+export class ValidatorGroupController extends BaseController {
     constructor(protected queryService: IndexQueryService) {
         super(queryService);
     }
-    
-    @Post('geo/region')
+
+    @Post('validator/group')
     @ApiOperation({
-        description: 'Get the distribution of DOT Rewards per Region',
+        description: 'Get the distribution of DOT Rewards per Validator Group',
     })
-    @ApiOkResponse({ description: 'The distribution of DOT Rewards per Region', type: RewardsByRegion, isArray: true })
+    @ApiOkResponse({ description: 'The distribution of DOT Rewards per Validator Group', type: RewardsByValidationGroup, isArray: true })
     @HttpCode(HttpStatus.OK)
     async post(
-        @Body() params: RewardDistributionQueryDto): Promise<Array<RewardsByRegion>> {
+        @Body() params: RewardDistributionQueryDto): Promise<Array<RewardsByValidationGroup>> {
         return (await super.runQuery(
             params,
             this.queryTemplate,
             this.queryResponseTransformer,
-        )) as Array<RewardsByRegion>;
+        )) as Array<RewardsByValidationGroup>;
     }
 
-    queryResponseTransformer(indexResponse): Array<RewardsByRegion> {
+    queryResponseTransformer(indexResponse): Array<RewardsByValidationGroup> {
         const buckets = indexResponse.body.aggregations['polkawatch'].buckets as AggregatedIndexData;
-        return plainToInstance(RewardsByRegion, buckets, {
+        return plainToInstance(RewardsByValidationGroup, buckets, {
             excludeExtraneousValues: true,
         });
     }
@@ -40,7 +40,7 @@ export class GeoRegionController extends BaseController {
             aggs: {
                 polkawatch: {
                     terms: {
-                        field: 'validator_country_group_name',
+                        field: 'validator_parent_name',
                         order: {
                             reward: 'desc',
                         },
