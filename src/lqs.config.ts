@@ -34,7 +34,7 @@ export function configure(app, setupSwaggerModule = true): OpenAPI.Document {
     const swaggerConfig = new DocumentBuilder()
         .setTitle('Polkawatch Live Query Sever')
         .setDescription('REST API for Polkawatch indexer')
-        .setVersion('1.0')
+        .setVersion(configService.get('npm_package_version'))
         .build();
     const document = SwaggerModule.createDocument(app, swaggerConfig);
     if(setupSwaggerModule) SwaggerModule.setup(globalPrefix, app, document);
