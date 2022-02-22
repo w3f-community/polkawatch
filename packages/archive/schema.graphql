@@ -1,0 +1,40 @@
+type Heartbeat @entity {
+    id: ID!
+    blockNumber: BigInt!
+    authorityId: String!
+    peerId: String
+    externalAddresses: String!
+    validatorId: String
+}
+
+type Reward @entity {
+    id: ID!
+    timeStamp: BigInt!
+    blockNumber: BigInt!
+    era: BigInt!
+    payout: Payout!
+    validator: Validator!
+    nominator: String!
+    newReward: BigInt!
+    previousHeartbeat: Heartbeat
+}
+
+type Peer @entity {
+    id: ID!
+    validator: Validator
+}
+
+type Validator @entity {
+    id: ID!
+    lastPeerId: String
+    lastPayoutId: String
+    lastHeartbeat: Heartbeat
+}
+
+type Payout @entity {
+    id: ID!
+    blockNumber: BigInt!
+    eventIndex: Int!
+    validator: Validator!
+    era: BigInt!
+}

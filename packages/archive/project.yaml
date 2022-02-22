@@ -1,0 +1,46 @@
+specVersion: 0.2.0
+name: polkawatch-archive
+version: 0.0.4
+description: >-
+  This project can be use as a starting point for developing your SubQuery
+  project
+repository: 'https://github.com/subquery/subql-starter'
+schema:
+  file: ./schema.graphql
+network:
+  endpoint: 'wss://polkadot.valletech.eu'
+  genesisHash: '0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3'
+dataSources:
+  - kind: substrate/Runtime
+    startBlock: 8500000
+    mapping:
+      file: ./dist/index.js
+      handlers:
+
+        # Records and shared the timestamp of the block in process
+        - handler: handleTimestampSet
+          kind: substrate/CallHandler
+          filter:
+            module: timestamp
+            method: set
+
+        # Records heartbeat information to extract networking information
+        - handler: handleHeartbeat
+          kind: substrate/EventHandler
+          filter:
+            module: imOnline
+            method: HeartbeatReceived
+
+        # Extract era information and allows to trace Rewards Validator
+        - handler: hanblePayout
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: PayoutStarted
+
+        # Records Reward information traced to Validator and Networking info
+        - handler: hanbleReward
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Rewarded
