@@ -9,7 +9,7 @@
     "build:workspace": "nest build",
     "test:workspace": "echo broken...",
     "test:workspace:e2e": "echo pending...",
-    "list:workspace:test": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "lint:workspace:test": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
