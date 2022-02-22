@@ -1,7 +1,6 @@
-import {Injectable, Inject, Logger} from '@nestjs/common';
+import { Injectable, Inject, Logger } from '@nestjs/common';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { ConfigService } from '@nestjs/config';
-
 
 
 /**
@@ -21,7 +20,9 @@ export class SubstrateHistoryService {
 
     private readonly logger = new Logger(SubstrateHistoryService.name);
 
-    constructor(@Inject('SUBSTRATE_API') private api, private configService: ConfigService) {}
+    constructor(@Inject('SUBSTRATE_API') private api, private configService: ConfigService) {
+        // empty
+    }
 
     /**
      * pass-2 indexing will start at history-depth.
@@ -36,30 +37,30 @@ export class SubstrateHistoryService {
      * indexing should re-index from history depth every day.
      *
      */
-    async historyDepthStartBlock():Promise<number>{
-        let historyDepth = await this.api.query.staking.historyDepth();
-        let epochDuration = await this.api.consts.babe.epochDuration.toNumber();
-        let sessionsPerEra = await this.api.consts.staking.sessionsPerEra.toNumber();
-        let blocksPerEra = sessionsPerEra * epochDuration;
-        let historyBlocks = blocksPerEra * historyDepth;
-        let currentBlockNumber = await this.api.query.system.number();
-        let startBlock = currentBlockNumber - historyBlocks;
-        this.logger.log(`History Depth starts at block: ${startBlock}`)
+    async historyDepthStartBlock():Promise<number> {
+        const historyDepth = await this.api.query.staking.historyDepth();
+        const epochDuration = await this.api.consts.babe.epochDuration.toNumber();
+        const sessionsPerEra = await this.api.consts.staking.sessionsPerEra.toNumber();
+        const blocksPerEra = sessionsPerEra * epochDuration;
+        const historyBlocks = blocksPerEra * historyDepth;
+        const currentBlockNumber = await this.api.query.system.number();
+        const startBlock = currentBlockNumber - historyBlocks;
+        this.logger.log(`History Depth starts at block: ${startBlock}`);
         return startBlock;
     }
 
 }
 
-export const SubstrateAPIService =  {
+export const SubstrateAPIService = {
     provide: 'SUBSTRATE_API',
     useFactory: async (configService: ConfigService) => {
-        const endpoint=configService.get('INDEXER_SUBSTRATE_RPC_URL');
-        const logger = new Logger('SUBSTRATE_API')
+        const endpoint = configService.get('INDEXER_SUBSTRATE_RPC_URL');
+        const logger = new Logger('SUBSTRATE_API');
         const wsProvider = new WsProvider(endpoint);
         const api = await ApiPromise.create({ provider: wsProvider });
-        const ready = await api.isReady;
-        logger.log(`Substrate API Ready with endpoint: ${endpoint}`)
+        await api.isReady;
+        logger.log(`Substrate API Ready with endpoint: ${endpoint}`);
         return api;
     },
-    inject: [ConfigService]
-}
+    inject: [ConfigService],
+};
