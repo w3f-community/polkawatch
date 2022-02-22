@@ -1,0 +1,11 @@
+
+
+build nestjs app:
+  stage: build
+  image: node:14-alpine
+  script:
+    - yarn install
+    - yarn lint:test
+    - yarn test
+    - yarn test:e2e:regression
+    - yarn build
