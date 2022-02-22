@@ -33,12 +33,12 @@ export class RewardsByRegion {
 export class RewardsByCountry {
     @ApiResponseProperty()
     @Expose({ name: 'key' })
-    Country: string;
+        Country: string;
 
     @ApiResponseProperty()
     @Transform(({ value }) => value.value, { toClassOnly: true })
     @Expose({ name: 'reward' })
-    DotRewards: number;
+        DotRewards: number;
 }
 
 /**
@@ -48,12 +48,12 @@ export class RewardsByCountry {
 export class RewardsByNetworkProvider {
     @ApiResponseProperty()
     @Expose({ name: 'key' })
-    NetworkProvider: string;
+        NetworkProvider: string;
 
     @ApiResponseProperty()
     @Transform(({ value }) => value.value, { toClassOnly: true })
     @Expose({ name: 'reward' })
-    DotRewards: number;
+        DotRewards: number;
 }
 
 /**
@@ -63,10 +63,10 @@ export class RewardsByNetworkProvider {
 export class RewardsByValidationGroup {
     @ApiResponseProperty()
     @Expose({ name: 'key' })
-    ValidationGroup: string;
+        ValidationGroup: string;
 
     @ApiResponseProperty()
     @Transform(({ value }) => value.value, { toClassOnly: true })
     @Expose({ name: 'reward' })
-    DotRewards: number;
+        DotRewards: number;
 }

@@ -6,7 +6,7 @@
     "build:workspace": "./node_modules/.bin/subql codegen && tsc -b",
     "test:workspace": "echo pending...",
     "test:workspace:e2e": "echo pending...",
-    "list:workspace:test": "echo pending...",
+    "lint:workspace:test": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "build": "tsc -b",
     "prepack": "rm -rf dist && yarn build",
     "test": "jest",

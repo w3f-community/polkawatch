@@ -13,6 +13,7 @@ module.exports = {
     plugins: ['@typescript-eslint'],
     ignorePatterns: '*.test.js',
     rules: {
+        '@typescript-eslint/ban-ts-comment': 0,
         '@typescript-eslint/no-var-requires': 0,
         'brace-style': ['error', '1tbs', { allowSingleLine: true }],
         'comma-dangle': ['error', 'always-multiline'],

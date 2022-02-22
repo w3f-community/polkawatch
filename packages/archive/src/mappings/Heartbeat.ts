@@ -1,25 +1,25 @@
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
-import { hexToU8a, isHex, u8aToHex } from'@polkadot/util';
+import { isHex, u8aToHex } from'@polkadot/util';
 
-import {SubstrateExtrinsic,SubstrateEvent,SubstrateBlock} from "@subql/types";
+import { SubstrateEvent } from '@subql/types';
 
-import {Heartbeat as SubstrateHeartbeat} from "@polkadot/types/interfaces/imOnline";
+import { Heartbeat as SubstrateHeartbeat } from '@polkadot/types/interfaces/imOnline';
 
-import {Heartbeat, Peer, Validator} from "../types";
+import { Heartbeat, Peer, Validator } from '../types';
 
 export async function handleHeartbeat(event: SubstrateEvent): Promise<void> {
-    const blockNum=event.block.block.header.number.toBigInt();
-    const eventId =`${blockNum}-${event.idx}`;
+    const blockNum = event.block.block.header.number.toBigInt();
+    const eventId = `${blockNum}-${event.idx}`;
     const heartbeat = new Heartbeat(
-        eventId
+        eventId,
     );
 
-    const shb=event.extrinsic.extrinsic.method.args[0] as SubstrateHeartbeat;
+    const shb = event.extrinsic.extrinsic.method.args[0] as SubstrateHeartbeat;
 
-    heartbeat.blockNumber=blockNum;
-    heartbeat.authorityId=event.event.data[0].toString();
-    heartbeat.peerId=shb.networkState.peerId.toHex();
-    heartbeat.externalAddresses=JSON.stringify(shb.networkState.externalAddresses.toHuman());
+    heartbeat.blockNumber = blockNum;
+    heartbeat.authorityId = event.event.data[0].toString();
+    heartbeat.peerId = shb.networkState.peerId.toHex();
+    heartbeat.externalAddresses = JSON.stringify(shb.networkState.externalAddresses.toHuman());
     await heartbeat.save();
 
     /**
@@ -29,16 +29,16 @@ export async function handleHeartbeat(event: SubstrateEvent): Promise<void> {
      * the relation peerId to validatorId is more durable.
      */
     let peer = await Peer.get(heartbeat.peerId);
-    if(!peer){
+    if(!peer) {
         // We don't yet know the validator associated to this peerId
-        const keyOwner = await substrateKeyOwner(api,heartbeat.authorityId);
+        const keyOwner = await substrateKeyOwner(api, heartbeat.authorityId);
         if(keyOwner) {
             const validator = await getValidator(keyOwner);
-            validator.lastHeartbeatId=heartbeat.id;
+            validator.lastHeartbeatId = heartbeat.id;
 
             peer = new Peer(heartbeat.peerId);
             peer.validatorId = validator.id;
-            validator.lastPeerId=peer.id;
+            validator.lastPeerId = peer.id;
 
             await validator.save();
             await peer.save();
@@ -47,13 +47,12 @@ export async function handleHeartbeat(event: SubstrateEvent): Promise<void> {
             // We will also store the validator with the heartbeat when known
             // PeerId matching will therefore be backup for identifying validators whose session keys where
             // expired at indexing time.
-            heartbeat.validatorId=validator.id;
+            heartbeat.validatorId = validator.id;
             await heartbeat.save();
-        }
-        else logger.info(`AuthorityId ${heartbeat.authorityId} could not be resolved`);
+        } else {logger.info(`AuthorityId ${heartbeat.authorityId} could not be resolved`);}
     }
 
-    logger.info("Heartbeat: "+eventId);
+    logger.info('Heartbeat: ' + eventId);
 }
 
 /**
@@ -65,18 +64,18 @@ export async function handleHeartbeat(event: SubstrateEvent): Promise<void> {
  * @param network
  * @param keyType
  */
-export async function substrateKeyOwner(api, key, network=0, keyType='0x696d6f6e'){
-    if(!isHex(key)) key=u8aToHex(decodeAddress(key));
-    const owner=await api.query.session.keyOwner([keyType,key]);
-    if(!owner.isEmpty && owner!=="") return encodeAddress(owner.toHex(),network);
+export async function substrateKeyOwner(api, key, network = 0, keyType = '0x696d6f6e') {
+    if(!isHex(key)) key = u8aToHex(decodeAddress(key));
+    const owner = await api.query.session.keyOwner([keyType, key]);
+    if(!owner.isEmpty && owner !== '') return encodeAddress(owner.toHex(), network);
 }
 
 /**
  * Returns or Creates a new Validator
  */
 
-export async function getValidator(id){
-    let v= await Validator.get(id);
-    v=new Validator(id);
+export async function getValidator(id) {
+    let v = await Validator.get(id);
+    v = new Validator(id);
     return v;
 }

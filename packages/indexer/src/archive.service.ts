@@ -19,43 +19,43 @@ import { fetch } from 'cross-fetch';
 
 @Injectable()
 export class ArchiveService {
-  private readonly logger = new Logger(ArchiveService.name);
+    private readonly logger = new Logger(ArchiveService.name);
 
-  // We will not cache the main reward processing query
-  private readonly client: Client;
+    // We will not cache the main reward processing query
+    private readonly client: Client;
 
-  // We will cache queries to handle missing traces
-  private readonly cachedClient: Client;
+    // We will cache queries to handle missing traces
+    private readonly cachedClient: Client;
 
-  constructor(private configService: ConfigService) {
-    const host = configService.get('INDEXER_ARCHIVE_HOST');
-    const port = configService.get('INDEXER_ARCHIVE_PORT');
-    this.client = createClient({
-      url: `http://${host}:${port}/graphql`,
-      fetch: fetch,
-      requestPolicy: 'network-only',
-    });
+    constructor(private configService: ConfigService) {
+        const host = configService.get('INDEXER_ARCHIVE_HOST');
+        const port = configService.get('INDEXER_ARCHIVE_PORT');
+        this.client = createClient({
+            url: `http://${host}:${port}/graphql`,
+            fetch: fetch,
+            requestPolicy: 'network-only',
+        });
 
-    this.cachedClient = createClient({
-      url: `http://${host}:${port}/graphql`,
-      fetch: fetch,
-      requestPolicy: 'cache-first',
-    });
-  }
+        this.cachedClient = createClient({
+            url: `http://${host}:${port}/graphql`,
+            fetch: fetch,
+            requestPolicy: 'cache-first',
+        });
+    }
 
-  async query(query, params): Promise<any> {
-    return this.client.query(query, params).toPromise();
-  }
+    async query(query, params): Promise<any> {
+        return this.client.query(query, params).toPromise();
+    }
 
-  async cachedQuery(query, params): Promise<any> {
-    return this.cachedClient.query(query, params).toPromise();
-  }
+    async cachedQuery(query, params): Promise<any> {
+        return this.cachedClient.query(query, params).toPromise();
+    }
 
-  async queryRewards(params): Promise<any> {
-    return this.query(REWARDS_QUERY, params);
-  }
+    async queryRewards(params): Promise<any> {
+        return this.query(REWARDS_QUERY, params);
+    }
 
-  /**
+    /**
    *
    * When the reward record has no heartbeat information we will get it falling
    * back to peer-id resolution.
@@ -68,53 +68,53 @@ export class ArchiveService {
    *
    * @param reward
    */
-  async traceLastHeartbeat(reward): Promise<any> {
-    let trace = 'session';
+    async traceLastHeartbeat(reward): Promise<any> {
+        let trace = 'session';
 
-    if (!reward.previousHeartbeat) {
-      const peers = await this.getPeersByValidatorId(reward.validator.id);
+        if (!reward.previousHeartbeat) {
+            const peers = await this.getPeersByValidatorId(reward.validator.id);
 
-      if (peers) {
-        trace = 'peer_prev';
-        let lhb = await this.getLastHeartbeatsByPeers(reward.blockNumber, peers);
-        if (!lhb.length) {
-          trace = 'peer_post';
-          lhb = await this.getFirstHeartbeatsByPeers(peers);
+            if (peers) {
+                trace = 'peer_prev';
+                let lhb = await this.getLastHeartbeatsByPeers(reward.blockNumber, peers);
+                if (!lhb.length) {
+                    trace = 'peer_post';
+                    lhb = await this.getFirstHeartbeatsByPeers(peers);
+                }
+
+                if (!lhb.length) trace = 'missing';
+                else reward.previousHeartbeat = lhb[0];
+            }
+
+            reward.previousHeartbeatTrace = trace;
         }
-
-        if (!lhb.length) trace = 'missing';
-        else reward.previousHeartbeat = lhb[0];
-      }
-
-      reward.previousHeartbeatTrace = trace;
+        this.logger.debug(
+            `Reward ${reward.id} by validator ${reward.validator.id} traced to Heartbeat by ${trace}.`,
+        );
+        return reward;
     }
-    this.logger.debug(
-      `Reward ${reward.id} by validator ${reward.validator.id} traced to Heartbeat by ${trace}.`,
-    );
-    return reward;
-  }
 
-  async getPeersByValidatorId(validatorId): Promise<Array<any>> {
-    return this.cachedQuery(PEERS_BY_VALIDATOR_ID_QUERY, {
-      validatorId: validatorId,
-    }).then((results) => results.data.peers.nodes.map((peer) => peer.id));
-  }
+    async getPeersByValidatorId(validatorId): Promise<Array<any>> {
+        return this.cachedQuery(PEERS_BY_VALIDATOR_ID_QUERY, {
+            validatorId: validatorId,
+        }).then((results) => results.data.peers.nodes.map((peer) => peer.id));
+    }
 
-  async getLastHeartbeatsByPeers(
-    blockNumberLimit,
-    peers: Array<string>,
-  ): Promise<Array<any>> {
-    return this.cachedQuery(LAST_HEARTBEAT_BY_PEERS_QUERY, {
-      blockNumberLimit: blockNumberLimit,
-      peers: peers,
-    }).then((results) => results.data.heartbeats.nodes);
-  }
+    async getLastHeartbeatsByPeers(
+        blockNumberLimit,
+        peers: Array<string>,
+    ): Promise<Array<any>> {
+        return this.cachedQuery(LAST_HEARTBEAT_BY_PEERS_QUERY, {
+            blockNumberLimit: blockNumberLimit,
+            peers: peers,
+        }).then((results) => results.data.heartbeats.nodes);
+    }
 
-  async getFirstHeartbeatsByPeers(peers: Array<string>): Promise<Array<any>> {
-    return this.cachedQuery(FIRST_HEARTBEAT_BY_PEERS_QUERY, {
-      peers: peers,
-    }).then((results) => results.data.heartbeats.nodes);
-  }
+    async getFirstHeartbeatsByPeers(peers: Array<string>): Promise<Array<any>> {
+        return this.cachedQuery(FIRST_HEARTBEAT_BY_PEERS_QUERY, {
+            peers: peers,
+        }).then((results) => results.data.heartbeats.nodes);
+    }
 }
 
 // TODO: starting block, will try to query inside history_depth
