@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "main": "dist/index.js",
   "scripts": {
+    "build:workspace": "./node_modules/.bin/subql codegen && tsc -b",
+    "test:workspace": "echo pending...",
+    "test:workspace:e2e": "echo pending...",
+    "list:workspace:test": "echo pending...",
     "build": "tsc -b",
     "prepack": "rm -rf dist && yarn build",
     "test": "jest",

@@ -3,5 +3,11 @@
   "private": true,
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "scripts": {
+    "build": "yarn workspaces run build:workspace",
+    "test": "yarn workspaces run test:workspace",
+    "test:e2e": "yarn workspaces run test:workspace:e2e",
+    "lint:test": "yarn workspaces run list:workspace:test"
+  }
 }

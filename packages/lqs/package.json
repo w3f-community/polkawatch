@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "build:workspace": "nest build",
+    "test:workspace": "jest --passWithNoTests",
+    "test:workspace:e2e": "LQS_E2E_TEST_MODE=regression jest --config ./test/jest-e2e.json",
+    "list:workspace:test": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "prebuild": "rimraf dist",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
