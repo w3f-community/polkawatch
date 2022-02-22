@@ -1,5 +1,5 @@
-import { SubstrateEvent, SubstrateBlock } from '@subql/types';
-import { EraIndex, Balance, AccountId } from '@polkadot/types/interfaces';
+import { SubstrateEvent } from '@subql/types';
+import { Balance, AccountId } from '@polkadot/types/interfaces';
 import { Reward, Validator } from '../types';
 
 import { getTimestamp } from './TimeStamp';
@@ -15,7 +15,6 @@ export async function hanbleReward(event: SubstrateEvent): Promise<void> {
     );
 
     const timeStamp = getTimestamp(event.block.block.header.number.toBigInt());
-    const extrinsic = event.extrinsic.extrinsic.toHuman();
 
     const payout = getCachedPayout(blockNum, eventIdx, logger) ;
     const validator = await Validator.get(payout.validatorId);

@@ -1,7 +1,7 @@
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
-import { hexToU8a, isHex, u8aToHex } from'@polkadot/util';
+import { isHex, u8aToHex } from'@polkadot/util';
 
-import { SubstrateExtrinsic, SubstrateEvent, SubstrateBlock } from '@subql/types';
+import { SubstrateEvent } from '@subql/types';
 
 import { Heartbeat as SubstrateHeartbeat } from '@polkadot/types/interfaces/imOnline';
 
