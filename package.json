@@ -1,0 +1,7 @@
+{
+  "name": "polkawatch",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
+}

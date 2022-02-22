@@ -1,0 +1,3 @@
+[submodule "packages/lqs"]
+	path = packages/lqs
+	url = https://gitlab.com/polkawatch/live-query-server.git
