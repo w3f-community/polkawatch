@@ -13,8 +13,8 @@ Polkawatch crosses chain data with external datasources and traces weak on-chain
 ## Componets
 
 - [Archive](./packages/archive/Readme.md): Subquery Project that extracts and archives canonical chain data.
-- Indexer: Crosses archived data with external datasources and resolvers weak relationships between on-chain events, builds and inverted index with the resulting dataset.
-- Live Query Server: Provicess access to the inverted index to the DDPP and the DAPP.
+- [Indexer](./packages/indexer/Readme.md): Crosses archived data with external datasources and resolvers weak relationships between on-chain events, builds and inverted index with the resulting dataset.
+- [Live Query Server](./packages/lqs/Readme.md): Provicess access to the inverted index to the DDPP and the DAPP.
 - Distributed Data Pack Publisher: Publishes the dataset on IPFS ready for consumption by the DAPP.
 - DAPP: Presents the data to users, mainly from IPFS may also access directly the LQS for advanced queries.
 
