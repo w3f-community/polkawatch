@@ -5,7 +5,7 @@ build nestjs app:
   image: node:14-alpine
   script:
     - yarn install
-    - yarn lint:test
+    #- yarn lint:test
     - yarn test
-    - yarn test:e2e:regression
+    - yarn test:e2e
     - yarn build
