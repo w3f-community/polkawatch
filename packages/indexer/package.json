@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build:workspace": "nest build",
-    "test:workspace": "echo pending...",
+    "test:workspace": "echo broken...",
     "test:workspace:e2e": "echo pending...",
     "list:workspace:test": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "prebuild": "rimraf dist",
