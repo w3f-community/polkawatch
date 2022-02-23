@@ -20,6 +20,7 @@ import { fetch } from 'cross-fetch';
 @Injectable()
 export class ArchiveService {
     private readonly logger = new Logger(ArchiveService.name);
+    private readonly tracing = false;
 
     // We will not cache the main reward processing query
     private readonly client: Client;
@@ -88,9 +89,11 @@ export class ArchiveService {
 
             reward.previousHeartbeatTrace = trace;
         }
-        this.logger.debug(
-            `Reward ${reward.id} by validator ${reward.validator.id} traced to Heartbeat by ${trace}.`,
-        );
+        if (this.tracing) {
+            this.logger.debug(
+                `Reward ${reward.id} by validator ${reward.validator.id} traced to Heartbeat by ${trace}.`,
+            );
+        }
         return reward;
     }
 
@@ -131,6 +134,7 @@ const REWARDS_QUERY = gql`
         cursor
         node {
           id
+          era
           blockNumber
           newReward
           nominator
