@@ -1,11 +1,10 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
-import { Cache } from 'cache-manager';
 
 import { ApiPromise, WsProvider } from '@polkadot/api';
 
 import { ConfigService } from '@nestjs/config';
 
-import LRU from "lru-cache";
+import LRU from 'lru-cache';
 
 
 /**
@@ -23,14 +22,16 @@ import LRU from "lru-cache";
 @Injectable()
 export class SubstrateHistoryService {
 
-    private readonly tracing = true;
+    private readonly tracing = false;
     private readonly logger = new Logger(SubstrateHistoryService.name);
 
     private exposureCache;
+    private prefsCache;
 
     constructor(@Inject('SUBSTRATE_API') private api, private configService: ConfigService) {
-        // We consider 10 eras being claimed by 200 validators
-        this.exposureCache=new LRU({max:2000});
+        // We consider 10 eras being claimed by 300 validators
+        this.exposureCache = new LRU({ max:3000 });
+        this.prefsCache = new LRU({ max:3000 });
     }
 
     /**
@@ -59,44 +60,69 @@ export class SubstrateHistoryService {
     }
 
     /**
-     * We will validate that a nominator was actually staking with a validator for a given era
-     * we will also get the exposure it had to the validator
+     *
+     * This method will add additional information to the reward event that could not be traced
+     * at chain archive time.
+     *
+     * This also allows us to validate the indexed data versus history-depth queries.
+     *
      */
 
-    async addEraExposure(reward):Promise<any>{
-        const validatorId=reward.validator.id;
-        let era=reward.era;
-        const exposureByStaker = await this.getCachedExposureByStaker(era,validatorId);
-        let exposure = exposureByStaker[reward.nominator];
+    async addEraExposure(reward):Promise<any> {
+        const validatorId = reward.validator.id;
+        const era = reward.era;
+        const exposureByStaker = await this.getCachedExposureByStaker(era, validatorId);
+        const validatorPrefs = await this.getCachedValidatorPrefs(era, validatorId);
+        const exposure = exposureByStaker[reward.nominator];
         if(!exposure) this.logger.warn(`No EXPOSURE traced in ${reward.id}`);
         reward.nominationExposure = exposureByStaker[reward.nominator];
-        if(reward.validator.id === reward.nominator) {
-            reward.rewardType = "comission"
-        }
-        else reward.rewardType = "staking";
+        reward.comission = validatorPrefs.comission;
+        reward.validatorType = validatorPrefs.comission == 1 ? 'custodial' : 'public';
+        reward.rewardType = reward.validator.id == reward.nominator ? 'comission' : 'staking reward';
+
+        if(reward.validatorType == 'custodial') this.logger.warn(`Found custodial validator ${reward.validator.id}`);
         return reward;
     }
 
     async getCachedExposureByStaker(era, validatorId):Promise<any> {
-        const cacheKey=`exposure-${validatorId}-${era}`;
+        const cacheKey = `exposure-${validatorId}-${era}`;
         
-        if (this.exposureCache.has(cacheKey)) return this.exposureCache.get(cacheKey);
-        else {
-            let valuePromise = this.getExposureByStaker(era,validatorId);
-            this.exposureCache.set(cacheKey,valuePromise);
+        if (this.exposureCache.has(cacheKey)) {return this.exposureCache.get(cacheKey);} else {
+            const valuePromise = this.getExposureByStaker(era, validatorId);
+            this.exposureCache.set(cacheKey, valuePromise);
             return valuePromise;
         }
     }
 
-    async getExposureByStaker(era, validatorId):Promise<any>{
+    async getExposureByStaker(era, validatorId):Promise<any> {
         if (this.tracing) this.logger.debug(`Requesting eraStakers for ${validatorId} era ${era}`);
-        return this.api.query.staking.erasStakers(era,validatorId)
+        return this.api.query.staking.erasStakersClipped(era, validatorId)
             .then(result => {
-                let r={}
-                r[validatorId]=result.own.toBigInt().toString();
-                result.others.forEach(exposure => r[exposure.who]=exposure.value.toBigInt().toString());
+                const r = {};
+                r[validatorId] = result.own.toBigInt().toString();
+                result.others.forEach(exposure => r[exposure.who] = exposure.value.toBigInt().toString());
                 return r;
             });
+    }
+
+    async getCachedValidatorPrefs(era, validatorId):Promise<any> {
+        const cacheKey = `prefs-${validatorId}-${era}`;
+
+        if (this.prefsCache.has(cacheKey)) {return this.prefsCache.get(cacheKey);} else {
+            const valuePromise = this.getValidatorPrefs(era, validatorId);
+            this.prefsCache.set(cacheKey, valuePromise);
+            return valuePromise;
+        }
+    }
+
+
+    async getValidatorPrefs(era, validatorId):Promise<any> {
+        if (this.tracing) this.logger.debug(`Requesting validatorPrefs for ${validatorId} era ${era}`);
+        return this.api.query.staking.erasValidatorPrefs(era, validatorId)
+            .then(result => ({
+                commission: result.commission.toNumber() / 1000000000,
+                blocked: result.blocked.toHuman(),
+            }));
     }
 
 }

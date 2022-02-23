@@ -81,9 +81,8 @@ export class IndexerSchedulerService {
    * @param reward
    */
     async processReward(reward): Promise<any> {
-        // this.logger.debug(reward);
         return this.archiveService.traceLastHeartbeat(reward)
-            .then(reward => this.substrateHistory.addEraExposure(reward));
+            .then(rwd => this.substrateHistory.addEraExposure(rwd));
     }
 }
 
