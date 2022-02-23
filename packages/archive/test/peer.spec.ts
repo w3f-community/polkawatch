@@ -12,10 +12,9 @@ describe('Will test mapping authority IDs to Validators', ()=>{
     let api;
 
     beforeAll(async function() {
-        this.timeout(10000);
         const wsProvider = new WsProvider(endpoint);
         api = await ApiPromise.create({ provider: wsProvider });
-    });
+    }, 10000);
 
     it('Will get a key owner', async function() {
         const raw = await api.query.session.keyOwner(['0x696d6f6e', '0xa6ab108e0d10b8248469d38dd81c1dac29ccb53a9281577057077a062095b642']);
@@ -32,4 +31,10 @@ describe('Will test mapping authority IDs to Validators', ()=>{
         logger.log(owner);
         expect(owner === '15mURTf3t8dEvEY6Gb5N76wm9t2jQcXzewXmjT3yfZA1w8si');
     });
+
+    afterAll(async function() {
+        logger.log('disconnecting...');
+        api.disconnect();
+    }, 20000);
+
 });
