@@ -4,9 +4,11 @@
   "main": "dist/index.js",
   "scripts": {
     "build:workspace": "./node_modules/.bin/subql codegen && tsc -b",
-    "test:workspace": "echo pending...",
-    "test:workspace:e2e": "echo pending...",
+    "test:workspace": "jest",
+    "test:workspace:e2e": "echo Not required.",
     "lint:workspace:test": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "lint:test": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "lint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix ",
     "build": "tsc -b",
     "prepack": "rm -rf dist && yarn build",
     "test": "jest",
