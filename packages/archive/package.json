@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build:workspace": "./node_modules/.bin/subql codegen && tsc -b",
-    "test:workspace": "jest",
+    "test:workspace": "./node_modules/.bin/subql codegen && jest",
     "test:workspace:e2e": "echo Not required.",
     "lint:workspace:test": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "lint:test": "eslint \"{src,apps,libs,test}/**/*.ts\"",
