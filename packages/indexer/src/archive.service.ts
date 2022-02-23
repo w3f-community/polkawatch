@@ -89,9 +89,11 @@ export class ArchiveService {
 
             reward.previousHeartbeatTrace = trace;
         }
-        if (this.tracing) this.logger.debug(
-            `Reward ${reward.id} by validator ${reward.validator.id} traced to Heartbeat by ${trace}.`,
-        );
+        if (this.tracing) {
+            this.logger.debug(
+                `Reward ${reward.id} by validator ${reward.validator.id} traced to Heartbeat by ${trace}.`,
+            );
+        }
         return reward;
     }
 
