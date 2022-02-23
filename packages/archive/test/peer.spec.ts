@@ -34,7 +34,7 @@ describe('Will test mapping authority IDs to Validators', ()=>{
 
     afterAll(async function() {
         logger.log('disconnecting...');
-        //await api.disconnect();
+        // await api.disconnect();
     }, 20000);
 
 });
