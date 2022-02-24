@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build:workspace": "nest build",
-    "test:workspace": "echo broken...",
+    "test:workspace": "jest --forceExit",
     "test:workspace:e2e": "echo pending...",
     "lint:workspace:test": "eslint \"{src,apps,libs,test}/**/*.ts\"",
     "prebuild": "rimraf dist",
@@ -64,22 +64,5 @@
     "ts-node": "^10.0.0",
     "tsconfig-paths": "^3.10.1",
     "typescript": "^4.3.5"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node"
   }
 }

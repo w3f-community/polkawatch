@@ -1,6 +1,6 @@
 
 
-build nestjs app:
+build polkawatch packages:
   stage: build
   image: node:14-alpine
   script:
