@@ -77,13 +77,13 @@ export class IndexerSchedulerService {
     }
 
     /**
-   * Processes a Reward event asynchronously
+   * Processes a Reward event asynchronously.
    * @param reward
    */
     async processReward(reward): Promise<any> {
-        return this.archiveService.traceLastHeartbeat(reward)
-            .then(rwd => this.substrateHistory.addEraExposure(rwd))
-            .then(rwd => this.substrateHistory.getPublicIPAddresses(rwd));
+        reward = await this.archiveService.traceLastHeartbeat(reward);
+        reward = await this.substrateHistory.processReward(reward);
+        return reward;
     }
 }
 

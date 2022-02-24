@@ -60,12 +60,42 @@ describe('SubstrateService', () => {
             },
         };
 
-        const rewardWithIps = service.getPublicIPAddresses(reward);
+        const rewardWithIps = service.addPublicIPAddresses(reward);
         const publicIPs = rewardWithIps.previousHeartbeat.previousPublicExternalIPV46Addresses;
         expect(publicIPs).toContain('51.163.1.174');
         expect(publicIPs).not.toContain('172.18.0.2');
         expect(publicIPs).not.toContain('192.168.3.128');
         expect(publicIPs).toContain('2001:41d0:303:378c::');
+
+    });
+
+    /**
+     * Validator info appears and is presented in several configurations
+     * We will test
+     */
+    it('Will fetch validator info of a well known validator', async ()=>{
+
+        // Anonymous validator with named parent, indexed.
+        let info = await service.getValidatorInfo('1zugcagDxgkJtPQ4cMReSwXUbhQPGgtDEmFdHaaoHAhkKhU');
+        expect(info.info).toBeUndefined();
+        expect(info.parentId).toBeDefined();
+        expect(info.parentInfo).toBeDefined();
+        expect(info.childId).toBeDefined();
+
+        // Named validator with no parent
+        info = await service.getValidatorInfo('1MrurrNb4VTrRJUXT6fGxHFdmwwscqHZUFkMistMsP8k5Nk');
+        expect(info.info).toBeDefined();
+        expect(info.parentId).toBeUndefined();
+        expect(info.parentInfo).toBeUndefined();
+        expect(info.childId).toBeUndefined();
+
+        // anonymous validator with no parent
+        info = await service.getValidatorInfo('14xEfVDASe2FYodUoNoXaksxyvnjxudjjQXkbXWgG5fVaxi8');
+        expect(info.info).toBeUndefined();
+        expect(info.parentId).toBeUndefined();
+        expect(info.parentInfo).toBeUndefined();
+        expect(info.childId).toBeUndefined();
+
 
     });
 
