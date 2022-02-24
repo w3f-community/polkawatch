@@ -1,11 +1,11 @@
 import { Injectable, Inject, Logger } from '@nestjs/common';
-
-import { ApiPromise, WsProvider } from '@polkadot/api';
-
 import { ConfigService } from '@nestjs/config';
 
+import { ApiPromise, WsProvider } from '@polkadot/api';
+import { Multiaddr } from 'multiaddr';
+import is_private_ip from 'private-ip';
 import LRU from 'lru-cache';
-
+import { isHex, hexToU8a, u8aToString } from '@polkadot/util';
 
 /**
  * The Substrate History service uses RPC calls over History Depth to
@@ -123,6 +123,39 @@ export class SubstrateHistoryService {
                 commission: result.commission.toNumber() / 1000000000,
                 blocked: result.blocked.toHuman(),
             }));
+    }
+
+
+    getPublicIPAddresses(reward) {
+        if(!reward.previousHeartbeat) {
+            this.logger.warn(`No heartbeat traced for reward ${reward.id}, IP addressing not possible.`);
+            return reward;
+        }
+
+        const externalAddress = JSON.parse(reward.previousHeartbeat.externalAddresses);
+
+        const publicAddresses = externalAddress.map(address => {
+
+            if(isHex(address)) address = u8aToString(hexToU8a(address));
+            if(address[0] != '/' && address[1] == '/') address = address.substring(1);
+
+            try{
+                const ma = new Multiaddr(address);
+                if (ma.nodeAddress().family === 4 || ma.nodeAddress().family === 6) {
+                    const ipv46a = ma.nodeAddress().address;
+                    if (!is_private_ip(ipv46a)) return ipv46a;
+                } else {this.logger.warn(`Unexpected address type ${address} for ${reward.id}\``);}
+            } catch (e) {
+                this.logger.warn(`Could not parse address ${address} for ${reward.id}`);
+            }
+
+        }).filter(address => address);
+
+        if (this.tracing) this.logger.debug(`external IPV46 for reward ${reward.id} are ${publicAddresses}`);
+        if (!publicAddresses.length) this.logger.warn(`NO external IPV46 addresses identified for reward ${reward.id}`);
+        reward.previousHeartbeat.previousPublicExternalIPV46Addresses = publicAddresses;
+
+        return reward;
     }
 
 }
