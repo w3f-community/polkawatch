@@ -82,7 +82,8 @@ export class IndexerSchedulerService {
    */
     async processReward(reward): Promise<any> {
         return this.archiveService.traceLastHeartbeat(reward)
-            .then(rwd => this.substrateHistory.addEraExposure(rwd));
+            .then(rwd => this.substrateHistory.addEraExposure(rwd))
+            .then(rwd => this.substrateHistory.getPublicIPAddresses(rwd));
     }
 }
 
