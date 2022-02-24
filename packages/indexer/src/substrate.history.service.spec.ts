@@ -24,6 +24,7 @@ describe('SubstrateService', () => {
     });
 
     it('should be defined', () => {
+        jest.setTimeout(10000);
         expect(service).toBeDefined();
     });
 
