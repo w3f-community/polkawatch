@@ -4,7 +4,6 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { ConfigModule } from '@nestjs/config';
 import { IndexerSchedulerService } from './indexer.scheduler';
 import { SubstrateHistoryService, SubstrateAPIService } from './substrate.history.service';
-import { GeoService } from './geo/geo.service';
 
 import * as Joi from 'joi';
 
@@ -26,6 +25,6 @@ import * as Joi from 'joi';
         CacheModule.register(),
     ],
     controllers: [],
-    providers: [ArchiveService, IndexerSchedulerService, SubstrateAPIService, SubstrateHistoryService, GeoService],
+    providers: [ArchiveService, IndexerSchedulerService, SubstrateAPIService, SubstrateHistoryService],
 })
 export class IndexerModule {}
