@@ -164,7 +164,7 @@ export class SubstrateHistoryService {
 
         if (this.tracing) this.logger.debug(`external IPV46 for reward ${reward.id} are ${publicAddresses}`);
         if (!publicAddresses.length) this.logger.warn(`NO external IPV46 addresses identified for reward ${reward.id}`);
-        reward.previousHeartbeat.previousPublicExternalIPV46Addresses = publicAddresses;
+        reward.previousHeartbeat.externalIPV46Addresses = publicAddresses;
 
         return reward;
     }
@@ -208,8 +208,7 @@ export class SubstrateHistoryService {
             if (parentInfo.isSome) ret.parentInfo = parentInfo.unwrap().toHuman().info;
         }
 
-        // if (this.tracing)
-        this.logger.debug(`Validator info for ${validatorId} is ${JSON.stringify(ret)}`);
+        if (this.tracing) this.logger.debug(`Validator info for ${validatorId} is ${JSON.stringify(ret)}`);
         return ret;
     }
 

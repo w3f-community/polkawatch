@@ -1,18 +1,19 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { GeoService } from './geo.service';
+import { GeoliteService, GeoliteDBService } from './geolite.service';
 
-describe('GeoService', () => {
-    let service: GeoService;
+describe('GeoliteService', () => {
+    let service: GeoliteService;
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [GeoService],
+            providers: [GeoliteService, GeoliteDBService],
         }).compile();
 
-        service = module.get<GeoService>(GeoService);
+        service = module.get<GeoliteService>(GeoliteService);
     });
 
     it('should be defined', () => {
         expect(service).toBeDefined();
     });
 });
+

@@ -61,7 +61,7 @@ describe('SubstrateService', () => {
         };
 
         const rewardWithIps = service.addPublicIPAddresses(reward);
-        const publicIPs = rewardWithIps.previousHeartbeat.previousPublicExternalIPV46Addresses;
+        const publicIPs = rewardWithIps.previousHeartbeat.externalIPV46Addresses;
         expect(publicIPs).toContain('51.163.1.174');
         expect(publicIPs).not.toContain('172.18.0.2');
         expect(publicIPs).not.toContain('192.168.3.128');
