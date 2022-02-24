@@ -9,7 +9,33 @@ export type QueryResponse = QueryResponseRecord | Array<QueryResponseRecord>;
 /**
  * Here we list all possible Response Records we may get
  */
-export type QueryResponseRecord = RewardsByRegion | RewardsByCountry | RewardsByNetworkProvider | RewardsByValidationGroup;
+export type QueryResponseRecord = RewardsByRegion | RewardsByCountry | RewardsByNetworkProvider | RewardsByValidationGroup | AboutData;
+
+/**
+ * About Data
+ */
+
+export class AboutData {
+    @ApiResponseProperty()
+    @Transform(({ value }) => value.value, { toClassOnly: true })
+    @Expose({ name: 'total_eras' })
+        TotalEras: number;
+
+    @ApiResponseProperty()
+    @Transform(({ value }) => value.value, { toClassOnly: true })
+    @Expose({ name: 'total_rewards' })
+        TotalRewards: number;
+
+    @ApiResponseProperty()
+    @Transform(({ value }) => value.value, { toClassOnly: true })
+    @Expose({ name: 'total_rewards_dot' })
+        TotalRewardsDot: number;
+
+    @ApiResponseProperty()
+    @Transform(({ value }) => value.value, { toClassOnly: true })
+    @Expose({ name: 'latest_era' })
+        DotRewards: number;
+}
 
 /**
  * Rewards by Region

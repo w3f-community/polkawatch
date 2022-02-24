@@ -3,7 +3,7 @@ import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../lqs.controller';
 import { AggregatedIndexData, IndexQueryService } from '../lqs.index.service';
 import { RewardsByCountry } from './query.responses.dtos';
-import { RewardDistributionQueryDto } from './query.parameters.dtos';
+import {QueryParameters, RewardDistributionQueryDto} from './query.parameters.dtos';
 import { plainToInstance } from 'class-transformer';
 
 @ApiTags('geography')
@@ -23,7 +23,7 @@ export class GeoCountryController extends BaseController {
         @Body() params: RewardDistributionQueryDto): Promise<Array<RewardsByCountry>> {
         return (await super.runQuery(
             params,
-            this.queryTemplate,
+            this.queryTemplate as (p: QueryParameters) => any,
             this.queryResponseTransformer,
         )) as Array<RewardsByCountry>;
     }
