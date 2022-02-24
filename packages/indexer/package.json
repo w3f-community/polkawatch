@@ -36,11 +36,14 @@
     "@urql/core": "^2.4.2",
     "cache-manager": "^3.6.0",
     "cross-fetch": "^3.1.5",
+    "geolite2-redist": "^2.0.4",
     "lru-cache": "^7.4.0",
+    "maxmind": "^4.3.5",
     "private-ip": "^2.3.3",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.2.0"
+    "rxjs": "^7.2.0",
+    "service": "^0.1.4"
   },
   "devDependencies": {
     "@nestjs/cli": "^8.0.0",

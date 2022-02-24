@@ -4,39 +4,43 @@ import { Cron, Timeout } from '@nestjs/schedule';
 
 import { ArchiveService } from './archive.service';
 import { SubstrateHistoryService } from './substrate.history.service';
+import { GeoliteService } from './geolite.service';
 
 /**
- * This is the main entrypoin of Polkawatch second pass indexing
+ * This is the main entrypoint of Polkawatch second pass indexing
  * It is scheduled as it depends on live data
  *
  */
 
 @Injectable()
 export class IndexerSchedulerService {
+    private processing = false;
     private readonly logger = new Logger(IndexerSchedulerService.name);
 
     constructor(
     private archiveService: ArchiveService,
     private substrateHistory: SubstrateHistoryService,
+    private geoliteService: GeoliteService,
     ) {
         // ignore
     }
 
     @Cron('0 0 3 * * *')
     async processRewardsDaily() {
-        return this.rewardProcessing();
+        if(!this.processing) this.rewardProcessing();
     }
 
     @Timeout(2000)
     async processRewardsOnStart() {
-        return this.rewardProcessing();
+        if(!this.processing) return this.rewardProcessing();
     }
-
 
     async rewardProcessing() {
         let qr: QueryRet = { hasNext: true, cursor: undefined };
         let total = 0;
 
+        // Simple mutex to avoid process overlap due to an agressive scheduling or start/scheduling overlap
+        this.processing = true;
         this.logger.log('Starting Rewards Processing');
         const startBlockNumber = await this.substrateHistory.historyDepthStartBlock();
 
@@ -74,6 +78,7 @@ export class IndexerSchedulerService {
                 });
         }
         this.logger.log(`${total} rewards processed`);
+        this.processing = false;
     }
 
     /**
@@ -83,6 +88,7 @@ export class IndexerSchedulerService {
     async processReward(reward): Promise<any> {
         reward = await this.archiveService.traceLastHeartbeat(reward);
         reward = await this.substrateHistory.processReward(reward);
+        reward = await this.geoliteService.processReward(reward);
         return reward;
     }
 }
