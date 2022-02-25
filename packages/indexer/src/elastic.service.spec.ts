@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { ElasticService, ElasticApiClientService } from './elastic.service';
+import { ElasticService } from './elastic.service';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 
@@ -20,7 +20,7 @@ describe('ElasticService', () => {
             ],
             providers: [ElasticService, {
                 provide: 'ELASTIC_API_CLIENT',
-                useValue: {}
+                useValue: {},
             }],
         }).compile();
         service = module.get<ElasticService>(ElasticService);
