@@ -89,7 +89,7 @@ export class SubstrateHistoryService {
         reward.nominationExposure = exposureByStaker[reward.nominator];
         reward.comission = validatorPrefs.comission;
         reward.validatorType = validatorPrefs.comission == 1 ? 'custodial' : 'public';
-        reward.rewardType = reward.validator.id == reward.nominator ? 'comission' : 'staking reward';
+        reward.rewardType = reward.validator.id == reward.nominator ? 'validator comission' : 'staking reward';
 
         if(reward.validatorType == 'custodial') this.logger.warn(`Found custodial validator ${reward.validator.id}`);
         return reward;
@@ -190,10 +190,12 @@ export class SubstrateHistoryService {
      */
     async getValidatorInfo(validatorId):Promise<any> {
         const ret = {
+            id: validatorId,
             info: undefined,
             parentInfo: undefined,
             parentId: undefined,
             childId: undefined,
+            display: undefined,
         };
         const validatorInfo = await this.api.query.identity.identityOf(validatorId as AccountId);
         if (validatorInfo.isSome) ret.info = validatorInfo.unwrap().toHuman().info;
@@ -203,15 +205,83 @@ export class SubstrateHistoryService {
             validatorSuper = validatorSuper.unwrap().toHuman();
             const validatorParent = validatorSuper[0];
             ret.parentId = validatorParent;
-            if(validatorSuper.length > 1) ret.childId = validatorSuper[1].Raw;
+            if(validatorSuper.length > 1) ret.childId = validatorSuper[1];
             const parentInfo = await this.api.query.identity.identityOf(validatorParent);
             if (parentInfo.isSome) ret.parentInfo = parentInfo.unwrap().toHuman().info;
         }
+
+        // Add the Validator information in its preferred display format
+        ret.display = this.getValidatorInfoDisplay(ret);
 
         if (this.tracing) this.logger.debug(`Validator info for ${validatorId} is ${JSON.stringify(ret)}`);
         return ret;
     }
 
+    /**
+     * The validator information is presented to the user differently depending on the
+     * parent/child available data
+     * @param info
+     */
+    getValidatorInfoDisplay(vi) {
+        return {
+            name: this.getValidatorDisplayName(vi),
+            parentId: vi.parentId ? vi.parentId : vi.id,
+            groupName: this.getValidatorGroupName(vi),
+            groupWeb: this.getValidatorGroupAttributute(vi, 'web'),
+            groupEmail: this.getValidatorGroupAttributute(vi, 'email'),
+            groupLegal: this.getValidatorGroupAttributute(vi, 'legal'),
+            groupRiot: this.getValidatorGroupAttributute(vi, 'riot'),
+        };
+
+    }
+
+    /**
+     * Workout the validator display name depending on the different present information objects
+     * @param vi the available validator information
+     */
+    getValidatorDisplayName(vi) {
+        // the validator itself has a
+        if (vi.info) {
+            if (vi.info.display) {return this.decodeInfoField(vi.info.display);}
+        }
+        if(vi.parentInfo && vi.childId) return `${this.getValidatorGroupName(vi)} / ${this.decodeInfoField(vi.childId)}`;
+        return vi.id;
+    }
+
+    /**
+     * Workout
+     * @param vi the available validator information
+     */
+    getValidatorGroupName(vi) {
+        // if we dont have parent, we are it, use or same display name
+        if(!vi.parentId) return this.getValidatorDisplayName(vi);
+        if(vi.parentInfo) return this.decodeInfoField(vi.parentInfo.display);
+        else return vi.parentId;
+    }
+
+    /**
+     * Return a validator group data field,
+     * @param vi
+     * @param attr
+     */
+    getValidatorGroupAttributute(vi, attr) {
+        if(vi.parentInfo) {
+            if(vi.parentInfo[attr]) {return this.decodeInfoField(vi.parentInfo[attr]);}
+        }
+    }
+
+    /**
+     * Will read an info field, detecting and decoding it in the case it is HEX
+     */
+    decodeInfoField(field) {
+        if(isHex(field.Raw)) return new Buffer(hexToU8a(field.Raw)).toString();
+        else return field.Raw;
+    }
+
+    async onModuleDestroy() {
+        this.logger.log('Closing API Connection...');
+        await this.api.disconnect();
+    }
 }
 
 export const SubstrateAPIService = {

@@ -5,6 +5,7 @@ import { Cron, Timeout } from '@nestjs/schedule';
 import { ArchiveService } from './archive.service';
 import { SubstrateHistoryService } from './substrate.history.service';
 import { GeoliteService } from './geolite.service';
+import { ElasticService } from './elastic.service';
 
 /**
  * This is the main entrypoint of Polkawatch second pass indexing
@@ -21,6 +22,7 @@ export class IndexerSchedulerService {
     private archiveService: ArchiveService,
     private substrateHistory: SubstrateHistoryService,
     private geoliteService: GeoliteService,
+    private elasticService: ElasticService,
     ) {
         // ignore
     }
@@ -49,7 +51,7 @@ export class IndexerSchedulerService {
             // Each batch will be processed asynchronously
             // Return Query Status, and the results of processing all reward events
             qr = await this.archiveService
-                .queryRewards({ batchSize: 100, cursor: qr.cursor, startBlockNumber: startBlockNumber })
+                .queryRewards({ batchSize: 10, cursor: qr.cursor, startBlockNumber: startBlockNumber })
                 .then((results) =>
                     Promise.all([
                         Promise.resolve({
@@ -89,6 +91,7 @@ export class IndexerSchedulerService {
         reward = await this.archiveService.traceLastHeartbeat(reward);
         reward = await this.substrateHistory.processReward(reward);
         reward = await this.geoliteService.processReward(reward);
+        reward = await this.elasticService.persistReward(reward);
         return reward;
     }
 }
