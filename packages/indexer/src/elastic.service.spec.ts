@@ -18,9 +18,11 @@ describe('ElasticService', () => {
                     }),
                 }),
             ],
-            providers: [ElasticService, ElasticApiClientService],
+            providers: [ElasticService, {
+                provide: 'ELASTIC_API_CLIENT',
+                useValue: {}
+            }],
         }).compile();
-
         service = module.get<ElasticService>(ElasticService);
     });
 
