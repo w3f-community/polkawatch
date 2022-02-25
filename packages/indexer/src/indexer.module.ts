@@ -5,6 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { IndexerSchedulerService } from './indexer.scheduler';
 import { SubstrateHistoryService, SubstrateAPIService } from './substrate.history.service';
 import { GeoliteService, GeoliteDBService } from './geolite.service';
+import { ElasticService, ElasticApiClientService } from './elastic.service';
 
 import * as Joi from 'joi';
 
@@ -20,12 +21,14 @@ import * as Joi from 'joi';
                 INDEXER_ARCHIVE_HOST: Joi.string().default('localhost'),
                 INDEXER_ARCHIVE_PORT: Joi.number().default(3000),
                 INDEXER_SUBSTRATE_RPC_URL: Joi.string().default('wss://polkadot.valletech.eu'),
+                INDEXER_ELASTIC_PORT: Joi.number().default(9200),
+                INDEXER_ELASTIC_HOST: Joi.string().default('localhost'),
             }),
         }),
         ScheduleModule.forRoot(),
         CacheModule.register(),
     ],
     controllers: [],
-    providers: [ArchiveService, IndexerSchedulerService, SubstrateAPIService, SubstrateHistoryService, GeoliteService, GeoliteDBService],
+    providers: [ArchiveService, IndexerSchedulerService, SubstrateAPIService, SubstrateHistoryService, GeoliteService, GeoliteDBService, ElasticService, ElasticApiClientService],
 })
 export class IndexerModule {}

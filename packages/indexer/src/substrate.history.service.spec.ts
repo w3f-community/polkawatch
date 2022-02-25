@@ -95,9 +95,6 @@ describe('SubstrateService', () => {
         expect(info.parentId).toBeUndefined();
         expect(info.parentInfo).toBeUndefined();
         expect(info.childId).toBeUndefined();
-
-
     });
-
 
 });

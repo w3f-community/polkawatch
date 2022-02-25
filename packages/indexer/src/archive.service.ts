@@ -86,9 +86,10 @@ export class ArchiveService {
                 if (!lhb.length) trace = 'missing';
                 else reward.previousHeartbeat = lhb[0];
             }
-
-            reward.previousHeartbeatTrace = trace;
         }
+
+        reward.previousHeartbeatTrace = trace;
+
         if (this.tracing) {
             this.logger.debug(
                 `Reward ${reward.id} by validator ${reward.validator.id} traced to Heartbeat by ${trace}.`,
@@ -134,6 +135,7 @@ const REWARDS_QUERY = gql`
         cursor
         node {
           id
+          timeStamp
           era
           blockNumber
           newReward
