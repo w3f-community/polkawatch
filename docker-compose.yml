@@ -12,9 +12,24 @@ volumes:
 
 services:
 
+  # Archive test data preload utility. This will download a database backup that would take 2 days to produce
+  # by archiving the blockchain
+
+  archive-test-data:
+    image: alpine
+    command: sh -c "wget -O - https://ipfs.valletech.eu/ipfs/QmezVahxuwzaYnSRPgqFppXNgjGREZ99KDtivQF1qr57ar | tar -C dest -xvz"
+    volumes:
+      - pgdata:/dest
+    profiles:
+      - getdata
+
   # Archive Postgres Server (SubQuery)
 
   archive-postgres:
+    profiles:
+      - archive
+      - development
+      - testdeploy
     image: postgres:12-alpine
     # No need to open port 5432
     volumes:
@@ -51,6 +66,10 @@ services:
       interval: 3s
       timeout: 5s
       retries: 10
+    profiles:
+      - archive
+      - development
+      - testdeploy
 
   # Archive GraphQL Server (Subquery) and Playground
 
@@ -72,6 +91,10 @@ services:
       - --name=app
       - --playground
       - --indexer=http://archive-subquery:3000
+    profiles:
+      - archive
+      - development
+      - testdeploy
 
   # Polkawatch Indexer (2-pass) Elasticsearch Server
 
@@ -90,6 +113,9 @@ services:
       memlock:
         soft: -1
         hard: -1
+    profiles:
+      - development
+      - testdeploy
 
   # Polkawatch Indexer (2-pass) Elastic/Kibana Playground
 
@@ -102,6 +128,9 @@ services:
       - 5601:5601
     depends_on:
       - indexer-elasticsearch
+    profiles:
+      - development
+      - testdeploy
 
   # Polkawatch Indexer (2-pass)
 
@@ -114,6 +143,8 @@ services:
     depends_on:
       - archive-graphql
       - indexer-elasticsearch
+    profiles:
+      - testdeploy
 
   # Polkawatch Live Query Server
 
@@ -126,3 +157,5 @@ services:
       - 7000:7000
     depends_on:
       - indexer-elasticsearch
+    profiles:
+      - testdeploy

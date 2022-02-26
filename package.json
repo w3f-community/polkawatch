@@ -5,8 +5,13 @@
     "packages/*"
   ],
   "scripts": {
-    "docker:dev": "docker-compose up",
-    "clean:docker": "docker-compose rm -f && docker volume rm $(basename $(pwd))_pgdata $(basename $(pwd))_esdata",
+    "docker": "yarn docker:testdeploy",
+    "docker:build": "docker-compose build",
+    "docker:getdata": "docker-compose --profile getdata up",
+    "docker:archive": "docker-compose --profile archive up",
+    "docker:dev": "docker-compose --profile development up",
+    "docker:testdeploy": "docker-compose --profile testdeploy up",
+    "docker:clean": "docker-compose rm -f && docker volume rm $(basename $(pwd))_pgdata $(basename $(pwd))_esdata",
     "build": "yarn workspaces run build:workspace",
     "test": "yarn workspaces run test:workspace",
     "test:e2e": "yarn workspaces run test:workspace:e2e",
