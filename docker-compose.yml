@@ -1,0 +1,128 @@
+version: '3'
+
+volumes:
+
+  # Postgress data holds the Archived Data (indexing pass-1)
+
+  pgdata:
+
+  # Elasticsearch data holds the Indexer Data (indexing pass-2)
+
+  esdata:
+
+services:
+
+  # Archive Postgres Server (SubQuery)
+
+  archive-postgres:
+    image: postgres:12-alpine
+    # No need to open port 5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Archive SubQuery Node, 1-pass indexing/archive
+
+  archive-subquery:
+    build: ./packages/archive
+    depends_on:
+      - archive-postgres
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: archive-postgres
+      DB_PORT: 5432
+    volumes:
+      - ./packages/archive:/app
+    command:
+      - -f=/app
+      - --db-schema=app
+      - --unsafe=true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://subquery-node:3000/ready"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
+  # Archive GraphQL Server (Subquery) and Playground
+
+  archive-graphql:
+    image: onfinality/subql-query:latest
+    ports:
+      - 3000:3000
+    depends_on:
+      - archive-postgres
+      - archive-subquery
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: archive-postgres
+      DB_PORT: 5432
+    command:
+      - --name=app
+      - --playground
+      - --indexer=http://archive-subquery:3000
+
+  # Polkawatch Indexer (2-pass) Elasticsearch Server
+
+  indexer-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
+    privileged: true
+    environment:
+      xpack.security.enabled: "false"
+      discovery.type: single-node
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+    ports:
+      - 9200:9200
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+  # Polkawatch Indexer (2-pass) Elastic/Kibana Playground
+
+  indexer-kibana:
+    image: docker.elastic.co/kibana/kibana:7.15.1
+    environment:
+      xpack.security.enabled: "false"
+      ELASTICSEARCH_HOSTS: '["http://indexer-elasticsearch:9200"]'
+    ports:
+      - 5601:5601
+    depends_on:
+      - indexer-elasticsearch
+
+  # Polkawatch Indexer (2-pass)
+
+  indexer:
+    build: ./packages/indexer
+    restart: always
+    environment:
+      INDEXER_ARCHIVE_HOST: archive-graphql
+      INDEXER_ELASTIC_HOST: indexer-elasticsearch
+    depends_on:
+      - archive-graphql
+      - indexer-elasticsearch
+
+  # Polkawatch Live Query Server
+
+  lqs:
+    build: ./packages/lqs
+    restart: always
+    environment:
+      LQS_ELASTIC_HOST: indexer-elasticsearch
+    ports:
+      - 7000:7000
+    depends_on:
+      - indexer-elasticsearch

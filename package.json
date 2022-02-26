@@ -5,6 +5,8 @@
     "packages/*"
   ],
   "scripts": {
+    "docker:dev": "docker-compose up",
+    "clean:docker": "docker-compose rm -f && docker volume rm $(basename $(pwd))_pgdata $(basename $(pwd))_esdata",
     "build": "yarn workspaces run build:workspace",
     "test": "yarn workspaces run test:workspace",
     "test:e2e": "yarn workspaces run test:workspace:e2e",
