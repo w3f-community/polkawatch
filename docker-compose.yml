@@ -47,7 +47,8 @@ services:
   archive-subquery:
     build: ./packages/archive
     depends_on:
-      - archive-postgres
+      "archive-postgres":
+        condition: service_healthy
     restart: always
     environment:
       DB_USER: postgres
@@ -55,14 +56,12 @@ services:
       DB_DATABASE: postgres
       DB_HOST: archive-postgres
       DB_PORT: 5432
-    volumes:
-      - ./packages/archive:/app
     command:
       - -f=/app
       - --db-schema=app
       - --unsafe=true
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://subquery-node:3000/ready"]
+      test: ["CMD", "curl", "-f", "http://archive-subquery:3000/ready"]
       interval: 3s
       timeout: 5s
       retries: 10
@@ -74,12 +73,14 @@ services:
   # Archive GraphQL Server (Subquery) and Playground
 
   archive-graphql:
-    image: onfinality/subql-query:latest
+    image: onfinality/subql-query:v0.12.0
     ports:
       - 3000:3000
     depends_on:
-      - archive-postgres
-      - archive-subquery
+      "archive-postgres":
+        condition: service_healthy
+      "archive-subquery":
+        condition: service_healthy
     restart: always
     environment:
       DB_USER: postgres
