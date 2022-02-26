@@ -1,3 +1,6 @@
+// Copyright 2021-2022 Valletech AB authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { Test, TestingModule } from '@nestjs/testing';
 import { BaseController } from './lqs.controller';
 import { IndexQueryService, QueryTemplate } from './lqs.index.service';

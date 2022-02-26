@@ -10,9 +10,10 @@ module.exports = {
     parserOptions: {
         ecmaVersion: 12,
     },
-    plugins: ['@typescript-eslint'],
+    plugins: ['@typescript-eslint','header'],
     ignorePatterns: '*.test.js',
     rules: {
+        'header/header': [2, 'line', [' Copyright 2021-2022 Valletech AB authors & contributors',' SPDX-License-Identifier: Apache-2.0'], 2],
         '@typescript-eslint/ban-ts-comment': 0,
         '@typescript-eslint/no-var-requires': 0,
         'brace-style': ['error', '1tbs', { allowSingleLine: true }],

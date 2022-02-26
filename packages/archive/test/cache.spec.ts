@@ -1,3 +1,6 @@
+// Copyright 2021-2022 Valletech AB authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import LRU from 'lru-cache';
 
 describe('It Will test the LRU Cache', function() {

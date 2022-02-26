@@ -1,3 +1,7 @@
+// Copyright 2021-2022 Valletech AB authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+
 import { Injectable, Logger } from '@nestjs/common';
 
 import { Cron, Timeout } from '@nestjs/schedule';

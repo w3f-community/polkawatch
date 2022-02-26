@@ -1,3 +1,6 @@
+// Copyright 2021-2022 Valletech AB authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { SubstrateEvent } from '@subql/types';
 import { Balance, AccountId } from '@polkadot/types/interfaces';
 import { Reward, Validator } from '../types';
