@@ -19,6 +19,10 @@ export async function hanbleReward(event: SubstrateEvent): Promise<void> {
 
     const timeStamp = getTimestamp(event.block.block.header.number.toBigInt());
 
+    // We get the payout that is associated with this Reward event.
+    // The Indexer will be able to verify that our tracing was accurate in 2nd Stage Indexing
+    // by comparing the archived events to subQuery eraStakers api calls when processing inside history depth
+
     const payout = getCachedPayout(blockNum, eventIdx, logger) ;
     const validator = await Validator.get(payout.validatorId);
 
@@ -33,8 +37,8 @@ export async function hanbleReward(event: SubstrateEvent): Promise<void> {
     reward.blockNumber = blockNum;
     reward.era = payout.era;
 
-    // Why? heartbeats come all the time, and validators will move addresses
-    // We associate to the reward the most recent we have
+    // The Reward event will inherit Geo Location data associated with the external Addresses provided in the
+    // last heartbeat received from its validator.
     reward.previousHeartbeatId = validator.lastHeartbeatId;
 
     logger.debug(JSON.stringify(event));

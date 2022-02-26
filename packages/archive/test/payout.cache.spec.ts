@@ -1,8 +1,15 @@
 // Copyright 2021-2022 Valletech AB authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import { getCachedPayout, cachePayout } from '../src/mappings/Payout';
+import { getCachedPayout, cachePayout } from '../src';
 
+/**
+ * This tests ensures that the payoutCache that related Rewards events with its Payout
+ * works as expected.
+ *
+ * Data quality is assured in the Indexer by querying substrate's eraSkaters api.
+ *
+ */
 describe('Will test the Payout Cache functions', ()=>{
 
     it('Will Create Test Entries', ()=>{
