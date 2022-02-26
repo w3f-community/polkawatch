@@ -6,6 +6,9 @@ import { Multiaddr } from 'multiaddr';
 import { hexToU8a, isHex, u8aToString } from'@polkadot/util';
 
 
+// The API Connection may take time when connecting from far away
+jest.setTimeout(10000);
+
 describe('SubstrateService', () => {
     let service: SubstrateHistoryService;
 
@@ -26,7 +29,6 @@ describe('SubstrateService', () => {
     });
 
     it('should be defined', () => {
-        jest.setTimeout(10000);
         expect(service).toBeDefined();
     });
 

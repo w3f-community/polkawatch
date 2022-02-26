@@ -3,17 +3,15 @@
   "version": "0.1.0",
   "main": "dist/index.js",
   "scripts": {
-    "build:workspace": "./node_modules/.bin/subql codegen && tsc -b",
-    "test:workspace": "./node_modules/.bin/subql codegen && jest --forceExit",
+    "build:workspace": "yarn codegen && yarn build",
+    "test:workspace": "yarn codegen && jest --forceExit",
     "test:workspace:e2e": "echo Not required.",
-    "lint:workspace:test": "eslint \"{src,apps,libs,test}/**/*.ts\"",
+    "lint:workspace:test": "yarn lint:test",
     "lint:test": "eslint \"{src,apps,libs,test}/**/*.ts\"",
-    "lint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix ",
+    "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix ",
     "build": "tsc -b",
     "prepack": "rm -rf dist && yarn build",
     "test": "jest",
-    "start:docker": "cp -a ../../node_modules/* node_modules && docker-compose up",
-    "clean:docker": "docker-compose rm -f && docker volume rm $(basename $(pwd))_pgdata",
     "codegen": "./node_modules/.bin/subql codegen"
   },
   "files": [

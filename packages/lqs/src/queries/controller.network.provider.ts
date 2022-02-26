@@ -40,7 +40,7 @@ export class NetworkProviderController extends BaseController {
             aggs: {
                 polkawatch: {
                     terms: {
-                        field: 'validator_asn_group',
+                        field: 'validator_asn_group_name',
                         order: {
                             reward: 'desc',
                         },
