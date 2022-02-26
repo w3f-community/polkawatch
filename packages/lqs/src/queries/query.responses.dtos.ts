@@ -1,3 +1,6 @@
+// Copyright 2021-2022 Valletech AB authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { Expose, Transform } from 'class-transformer';
 import { ApiResponseProperty } from '@nestjs/swagger';
 

@@ -1,3 +1,6 @@
+// Copyright 2021-2022 Valletech AB authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
