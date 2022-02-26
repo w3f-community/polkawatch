@@ -1,3 +1,7 @@
+// Copyright 2021-2022 Valletech AB authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
+
 import { CacheModule, Module } from '@nestjs/common';
 import { ArchiveService } from './archive.service';
 import { ScheduleModule } from '@nestjs/schedule';
