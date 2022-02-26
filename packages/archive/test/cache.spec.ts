@@ -3,7 +3,11 @@
 
 import LRU from 'lru-cache';
 
+// This unit tests validates the specification we rely on from the LRU module
+
 describe('It Will test the LRU Cache', function() {
+
+    // The test LRU cache will only store the last 2 recently used elements.
     const cache = new LRU({
         max:2,
     });
@@ -18,6 +22,7 @@ describe('It Will test the LRU Cache', function() {
         cache.set('test1', 1);
         cache.set('test2', 2);
         cache.set('test3', 2);
+        // our cache holds only 2 elements, so this one is still there
         expect(cache.has('test2'));
         // this one has been evicted
         expect(!cache.has('test1'));

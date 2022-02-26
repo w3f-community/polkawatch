@@ -5,10 +5,16 @@ import { SubstrateEvent } from '@subql/types';
 import { EraIndex, AccountId } from '@polkadot/types/interfaces';
 import LRU from 'lru-cache';
 
-// Also implements Payout
 import { Payout as PayoutRecord } from '../types';
 import { getValidator } from './Heartbeat';
 
+/**
+ * Key Reward data is split between the Reward and Payout events. We need to match both.
+ * The following code assumes that the Rewards events follow its Payout event within the same
+ * block.
+ *
+ * @param event
+ */
 export async function hanblePayout(event: SubstrateEvent): Promise<void> {
     const blockNum = event.block.block.header.number.toBigInt();
     const eventIdx = event.idx;
@@ -36,7 +42,7 @@ export async function hanblePayout(event: SubstrateEvent): Promise<void> {
 }
 
 /**
- * LRU Cache to related Rewards with Payouts
+ * LRU Cache to relate Rewards with Payouts
  */
 const eraPayoutCache = new LRU({
     max:10,
@@ -52,10 +58,10 @@ export type Payout = {
 
 /**
  * We need to track when a Payout event takes place in chain because the Reward event
- * happens right after it and subquery does not call handlers in order. This allows us to disambiguate
+ * happens right after it and subQuery does not call handlers in order. This allows us to disambiguate
  * when several Payouts take place in the same block.
- * @param payout
- * @returns {Promise<void>}
+ *
+ * @param payout to cache
  */
 export function cachePayout(payout: Payout) {
     let blockPayouts;
@@ -68,7 +74,7 @@ export function cachePayout(payout: Payout) {
 }
 
 /**
- * From all the payouts cached we return the last one that took place before the event
+ * From all the payouts cached we return the last one that took place before right before the provided eventId
  * @param block
  * @param eventIndex
  * @param logger

@@ -10,8 +10,8 @@ let lastTimestamp = {
     ts: BigInt(0),
 };
 
-// This will actually work only for the last timestamp
-// block check is done for validation
+// All events without a block are assumed to have the timestamp of the block itself.
+// We just check that we are not asking for the timestamp from an event handling in another block
 export function getTimestamp(blk) {
     const { block, ts } = lastTimestamp;
     if(blk == block) {

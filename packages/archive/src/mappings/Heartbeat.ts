@@ -27,7 +27,7 @@ export async function handleHeartbeat(event: SubstrateEvent): Promise<void> {
 
     /**
      * Here we are going to try to identify who is behind a heartbeat, this is easy to findout
-     * at the top of the chain because session keys are recent. Old hertbeats may have been issued
+     * at the top of the chain because session keys are recent. Old heartbeats may have been issued
      * with old session keys and finding out who is behind it would be complex, however, we assume that
      * the relation peerId to validatorId is more durable.
      */
@@ -36,6 +36,11 @@ export async function handleHeartbeat(event: SubstrateEvent): Promise<void> {
         // We don't yet know the validator associated to this peerId
         const keyOwner = await substrateKeyOwner(api, heartbeat.authorityId);
         if(keyOwner) {
+
+            // We managed to get the validatorId from substrate using session objects. This
+            // Is the easiest but it works only reliably for the top of the chain.
+
+
             const validator = await getValidator(keyOwner);
             validator.lastHeartbeatId = heartbeat.id;
 
@@ -47,11 +52,14 @@ export async function handleHeartbeat(event: SubstrateEvent): Promise<void> {
             await peer.save();
 
             logger.info(`Peer ${heartbeat.peerId} is Validator ${validator.id}`);
+
             // We will also store the validator with the heartbeat when known
-            // PeerId matching will therefore be backup for identifying validators whose session keys where
-            // expired at indexing time.
             heartbeat.validatorId = validator.id;
             await heartbeat.save();
+
+            // The Polkawatch Indexer component will attempt to match the Heartbeat in 2nd stage
+            // indexing using the PeerId, but we leave it at this stage.
+
         } else {logger.info(`AuthorityId ${heartbeat.authorityId} could not be resolved`);}
     }
 
@@ -59,13 +67,13 @@ export async function handleHeartbeat(event: SubstrateEvent): Promise<void> {
 }
 
 /**
- * Attempts to deduct the validator by authorityId which seems related to session keys.
+ * Attempts to deduce the validator by authorityId which seems related to session keys.
  * This information is not always available, as session keys change over time.
  *
- * @param api
- * @param key
- * @param network
- * @param keyType
+ * @param api The polkadot API
+ * @param key The key to resolve
+ * @param network The netowrk we are at
+ * @param keyType The key type
  */
 export async function substrateKeyOwner(api, key, network = 0, keyType = '0x696d6f6e') {
     if(!isHex(key)) key = u8aToHex(decodeAddress(key));
@@ -74,7 +82,7 @@ export async function substrateKeyOwner(api, key, network = 0, keyType = '0x696d
 }
 
 /**
- * Returns or Creates a new Validator
+ * Returns or Creates a new Validator in the Store.
  */
 
 export async function getValidator(id) {
