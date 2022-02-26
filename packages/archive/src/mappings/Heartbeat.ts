@@ -1,3 +1,6 @@
+// Copyright 2021-2022 Valletech AB authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { decodeAddress, encodeAddress } from '@polkadot/keyring';
 import { isHex, u8aToHex } from'@polkadot/util';
 

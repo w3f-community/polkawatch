@@ -1,3 +1,6 @@
+// Copyright 2021-2022 Valletech AB authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { SubstrateEvent } from '@subql/types';
 import { EraIndex, AccountId } from '@polkadot/types/interfaces';
 import LRU from 'lru-cache';
