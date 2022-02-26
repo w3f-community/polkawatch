@@ -6,7 +6,7 @@
   ],
   "scripts": {
     "docker": "yarn docker:testdeploy",
-    "docker:build": "docker-compose build",
+    "docker:build": "docker-compose --profile testdeploy build",
     "docker:getdata": "docker-compose --profile getdata up",
     "docker:archive": "docker-compose --profile archive up",
     "docker:dev": "docker-compose --profile development up",
