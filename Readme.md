@@ -1,4 +1,4 @@
-# Polkawatch
+# About Polkawatch
 
 ## Decentralization Analytics for Sustrate/Polkadot.
 
@@ -29,19 +29,32 @@ daily schedule.
 - Distributed Data Pack Publisher (Coming Soon): Publishes the dataset on IPFS ready for consumption by the DAPP.
 - DAPP (Coming Soon): Presents the data to users, mainly from IPFS may also access directly the LQS for advanced queries.
 
-## Development and testing
+# Testing Guide
+
+## Unit Testing
+
+Polkawatch is a workspace project with multiple packages, however, testing can be triggered from the root of the project.
+Yarn commands are delegated to the child packages.
+
+In order to run the unit tests run:
+
+- ```yarn test``` to run all unit tests
+- ```yarn test:e2e``` tp run end-to-end tests in packages that provide them
+
+## Test Run of the System
 
 All modules deliver docker containers, and a docker-compopose, with multiple profiles, allow to run all or certain 
 components depending on the desired activity
 
 ### Setting up the environment
 
-1. Build the components with ```yarn docker:build```
+From the root of the project do:
+
+1. Build the containers for all components with ```yarn docker:build```
 2. Download some chain data with ``yarn docker:getdata`` or run the archive for 12-24hours to get a decent data sample
 with ```yarn docker:archive```. You can also do both. Getting data will simply download a postgres backup from IPFS with about 1M
 blocks of chain data already archived (first pass only).
-3. You can run all the components with ``yarn docker:testdeploy`` or if you are going to develop and prefer to run 
-components locally ``yarn docker:dev``
+3. You can run all the components with ``yarn docker:testdeploy`` 
 
 ### Available playgrounds
 
@@ -51,15 +64,19 @@ You can access the following playgrouds / UIs to monitor de indexing process and
 2. [Elasticsearch Kibana](http://localhost:5601) Used to compose complex queries that can be used to create LQS templates.
 3. [LQS API UI](http://localhost:7000/lqs) Used to test the Live Query Server API methods and test query templates.
 
-### Developing and testing locally
+### Developing locally
 
-You can call targets on all components from the root:
+In order to develop locally you can use: 
 
-1. Run all unit tests with ```yarn test```
-2. Run end to end tests with ```yarn test:e2e```
-3. Build all components with `` yarn build``
+1. Build all components from root with `` yarn build``
+2. You can run packages locally, i.e in your IDE, and run all other dependencies with ```yarn docker:dev```. The Indexer and LQS servers
+will not be started. If you want to release more resources for development you can optionally stop the Archive and 
+Kibana too.
+3. Additionally ``yarn docker:clean`` will clean up all containers and data volumes.
 
-All yarn scripts delegate to individual packages/modules. Individual components may offer more scripts/targets locally. 
+### Deployment 
+
+For deployment instructions check the [deployment tutorial](./deploy/Readme.md). 
 
 ## License and Copyright
 

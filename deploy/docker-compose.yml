@@ -1,0 +1,94 @@
+
+
+# This docker-compose contains the components required for production
+# It also uses the docker images released from Gitlab pipelines
+# For details on each component check the docker-compose in root folder.
+
+version: '3'
+
+volumes:
+  pgdata:
+  esdata:
+
+services:
+  archive-postgres:
+    image: postgres:12-alpine
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+  archive-subquery:
+    image: valletech/polkawatch-archive:latest
+    depends_on:
+      "archive-postgres":
+        condition: service_healthy
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: archive-postgres
+      DB_PORT: 5432
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://archive-subquery:3000/ready"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+  archive-graphql:
+    image: onfinality/subql-query:v0.12.0
+    ports:
+      - 3000:3000
+    depends_on:
+      "archive-postgres":
+        condition: service_healthy
+      "archive-subquery":
+        condition: service_healthy
+    restart: always
+    environment:
+      DB_USER: postgres
+      DB_PASS: postgres
+      DB_DATABASE: postgres
+      DB_HOST: archive-postgres
+      DB_PORT: 5432
+    command:
+      - --name=app
+      - --playground
+      - --indexer=http://archive-subquery:3000
+  indexer-elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.15.1
+    privileged: true
+    environment:
+      xpack.security.enabled: "false"
+      discovery.type: single-node
+      ES_JAVA_OPTS: -Xms512m -Xmx512m
+    ports:
+      - 9200:9200
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+  indexer:
+    image: valletech/polkawatch-indexer:latest
+    restart: always
+    environment:
+      INDEXER_ARCHIVE_HOST: archive-graphql
+      INDEXER_ELASTIC_HOST: indexer-elasticsearch
+    depends_on:
+      - archive-graphql
+      - indexer-elasticsearch
+  lqs:
+    image: valletech/polkawatch-lqs:latest
+    restart: always
+    environment:
+      LQS_ELASTIC_HOST: indexer-elasticsearch
+    ports:
+      - 7000:7000
+    depends_on:
+      - indexer-elasticsearch
