@@ -17,7 +17,7 @@ services:
 
   archive-test-data:
     image: alpine
-    command: sh -c "wget -O - https://ipfs.valletech.eu/ipfs/QmazEJf8PN7HrFqZvUjMwFcmmjmMV4mgNato4VNAUriFMr | tar -C dest -xvz"
+    command: sh -c "wget -O - https://ipfs.valletech.eu/ipfs/QmVyyATbTjyamYPWKZv1vKsvQyZF1AcqqhckBGG8ZE2fRz | tar -C dest -xvz"
     volumes:
       - pgdata:/dest
     profiles:
