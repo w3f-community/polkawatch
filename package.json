@@ -1,6 +1,7 @@
 {
   "name": "polkawatch",
   "private": true,
+  "version": "0.4.0",
   "workspaces": [
     "packages/*"
   ],
@@ -16,7 +17,6 @@
     "test": "yarn workspaces run test:workspace",
     "test:e2e": "yarn workspaces run test:workspace:e2e",
     "lint:test": "yarn workspaces run lint:workspace:test",
-    "version": "echo $npm_package_version"
-  },
-  "version": "0.0.0"
+    "pkg:version": "echo $npm_package_version"
+  }
 }
