@@ -12,6 +12,7 @@ build polkawatch packages:
     - yarn lint:test
     - yarn test
     - yarn test:e2e
+    # In our context Build works more like "pack"
     - yarn build
 
 polkawatch release:
@@ -22,6 +23,8 @@ polkawatch release:
     - apk add --no-cache openssh-client git
     - mkdir ${HOME}/.ssh
     - echo "${CI_ROBOT_SSH_KEY_B64Z}" | base64 -d | gunzip > ${HOME}/.ssh/id_rsa
+    - git config --global user.email ${CI_ROBOT_EMAIL}
+    - git config --global user.name "CI Robot"
   script:
     # Increase the release number
     - yarn version --patch --message "[skip-ci] New Release %s"
@@ -39,6 +42,8 @@ polkawatch release:
 
 polkawatch docker image deployment:
   stage: deploy
+  dependencies:
+    - polkawatch release
   image: docker:19.03.12
   services:
     - docker:19.03.12-dind
