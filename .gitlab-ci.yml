@@ -15,23 +15,34 @@ build polkawatch packages:
 
 polkawatch docker release:
   stage: release
-  image: docker:stable
+  image: docker:19.03.12
+  services:
+    - docker:19.03.12-dind
+
   before_script:
     # Setup Git for Push
     - apk add --no-cache openssh-client git
     - mkdir ${HOME}/.ssh
     - echo "${CI_ROBOT_SSH_KEY_B64Z}" | base64 -d | gunzip > ${HOME}/.ssh/id_rsa
     # Login in docker repo
-    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin registry-1.docker.io
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
-    # Increase the version
+    # Increase the release number
     - yarn version --patch --message "[skip-ci] New Release %s"
-    # Build the Docker Containers
     - APP_VERSION=$(yarn -s pkg:version)
-
+    # Build the Docker Containers
+    - >
+      for PACKAGE in archive indexer lqs; do
+        docker build -t $CI_REGISTRY/polkawatch/polkawatch/${PACKAGE}:latest -t $CI_REGISTRY/polkawatch/polkawatch/${PACKAGE}:${APP_VERSION} packages/${PACKAGE};
+      done
     # Push the new version wihtout triggering CI
     - git push --tags
-
+    # Push the docker containers to the registry
+    - >
+      for PACKAGE in archive indexer lqs; do
+        docker push $CI_REGISTRY/polkawatch/polkawatch/${PACKAGE}:latest;
+        docker push $CI_REGISTRY/polkawatch/polkawatch/${PACKAGE}:${APP_VERSION}
+      done
   when: manual
   only:
     - main
