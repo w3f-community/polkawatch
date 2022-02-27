@@ -22,11 +22,12 @@ polkawatch docker release:
     - mkdir ${HOME}/.ssh
     - echo "${CI_ROBOT_SSH_KEY_B64Z}" | base64 -d | gunzip > ${HOME}/.ssh/id_rsa
     # Login in docker repo
-    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD"
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin registry-1.docker.io
   script:
     # Increase the version
     - yarn version --patch --message "[skip-ci] New Release %s"
     # Build the Docker Containers
+    - APP_VERSION=$(yarn -s pkg:version)
 
     # Push the new version wihtout triggering CI
     - git push --tags
