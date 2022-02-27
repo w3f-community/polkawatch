@@ -23,16 +23,20 @@ polkawatch release:
     - apk add --no-cache openssh-client git
     - mkdir ${HOME}/.ssh
     - echo "${CI_ROBOT_SSH_KEY_B64Z}" | base64 -d | gunzip > ${HOME}/.ssh/id_rsa
+    - chmod 600 ${HOME}/.ssh/id_rsa
+    - ssh-keyscan gitlab.com >> ${HOME}/.ssh/known_hosts
     - git config --global user.email ${CI_ROBOT_EMAIL}
     - git config --global user.name "CI Robot"
+    - git remote add porigin ssh://git@$gitlab.com:${CI_PROJECT_PATH}.git
   script:
     # Increase the release number
     - yarn version --patch --message "[skip-ci] New Release %s"
-    # Push the new version wihtout triggering CI
-    - git push --tags
+    # Push to the branch the triggered
+    - git push porigin HEAD:${CI_COMMIT_REF_NAME} --tags
     # Pass the version to the next stage
     - yarn -s pkg:version > .APP_VERSION
   when: manual
+  allow_failure: false
   only:
     - main
     - /^stable.*$/
