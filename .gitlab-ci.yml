@@ -2,6 +2,7 @@
 stages:
   - build
   - release
+  - deploy
 
 build polkawatch packages:
   stage: build
@@ -13,37 +14,50 @@ build polkawatch packages:
     - yarn test:e2e
     - yarn build
 
-polkawatch docker release:
-  stage: release
-  image: docker:19.03.12
-  services:
-    - docker:19.03.12-dind
-
+polkawatch release:
+  image: node:14-alpine
   before_script:
     # Setup Git for Push
     - apk add --no-cache openssh-client git
     - mkdir ${HOME}/.ssh
     - echo "${CI_ROBOT_SSH_KEY_B64Z}" | base64 -d | gunzip > ${HOME}/.ssh/id_rsa
-    # Login in docker repo
-    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
   script:
     # Increase the release number
     - yarn version --patch --message "[skip-ci] New Release %s"
-    - APP_VERSION=$(yarn -s pkg:version)
+    # Push the new version wihtout triggering CI
+    - git push --tags
+    # Pass the version to the next stage
+    - yarn -s pkg:version > .APP_VERSION
+  when: manual
+  only:
+    - main
+    - /^stable.*$/
+  artifacts:
+    paths:
+      - .APP_VERSION
+
+polkawatch docker image deployment:
+  stage: release
+  image: docker:19.03.12
+  services:
+    - docker:19.03.12-dind
+  before_script:
+    # Login in docker repo
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    # Get the version from the artifacts
+    - APP_VERSION=$(cat .APP_VERSION)
     # Build the Docker Containers
     - >
       for PACKAGE in archive indexer lqs; do
         docker build -t $CI_REGISTRY/valletech/polkawatch-${PACKAGE}:latest -t $CI_REGISTRY/valletech/polkawatch-${PACKAGE}:${APP_VERSION} packages/${PACKAGE};
       done
-    # Push the new version wihtout triggering CI
-    - git push --tags
     # Push the docker containers to the registry
     - >
       for PACKAGE in archive indexer lqs; do
         docker push $CI_REGISTRY/valletech/polkawatch-${PACKAGE}:latest;
         docker push $CI_REGISTRY/valletech/polkawatch-${PACKAGE}:${APP_VERSION}
       done
-  when: manual
   only:
     - main
     - /^stable.*$/
