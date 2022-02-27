@@ -33,15 +33,15 @@ polkawatch docker release:
     # Build the Docker Containers
     - >
       for PACKAGE in archive indexer lqs; do
-        docker build -t $CI_REGISTRY/polkawatch/polkawatch/${PACKAGE}:latest -t $CI_REGISTRY/polkawatch/polkawatch/${PACKAGE}:${APP_VERSION} packages/${PACKAGE};
+        docker build -t $CI_REGISTRY/valletech/polkawatch-${PACKAGE}:latest -t $CI_REGISTRY/valletech/polkawatch-${PACKAGE}:${APP_VERSION} packages/${PACKAGE};
       done
     # Push the new version wihtout triggering CI
     - git push --tags
     # Push the docker containers to the registry
     - >
       for PACKAGE in archive indexer lqs; do
-        docker push $CI_REGISTRY/polkawatch/polkawatch/${PACKAGE}:latest;
-        docker push $CI_REGISTRY/polkawatch/polkawatch/${PACKAGE}:${APP_VERSION}
+        docker push $CI_REGISTRY/valletech/polkawatch-${PACKAGE}:latest;
+        docker push $CI_REGISTRY/valletech/polkawatch-${PACKAGE}:${APP_VERSION}
       done
   when: manual
   only:
