@@ -15,6 +15,7 @@ build polkawatch packages:
     - yarn build
 
 polkawatch release:
+  stage: release
   image: node:14-alpine
   before_script:
     # Setup Git for Push
@@ -37,7 +38,7 @@ polkawatch release:
       - .APP_VERSION
 
 polkawatch docker image deployment:
-  stage: release
+  stage: deploy
   image: docker:19.03.12
   services:
     - docker:19.03.12-dind
