@@ -20,12 +20,12 @@ Initially for Polkadot, Polkawatch could be used for any substrate blockchain.
 Polkawatch is setup as a yarn workspace project with multiple packages (components) that can be managed from the project 
 root and also from its project directory, the components are:
 
-- [Archive](./packages/archive/Readme.md): Subquery Project that extracts and archives canonical chain data, in an unique
+- [Archive](./packages/archive): Subquery Project that extracts and archives canonical chain data, in an unique
 first pass event archiving.
-- [Indexer](./packages/indexer/Readme.md): Crosses archived data with external datasources and resolvers weak relationships 
+- [Indexer](./packages/indexer): Crosses archived data with external datasources and resolvers weak relationships 
 between on-chain events, builds and inverted index with the resulting dataset. The indexing process runs on start and on
 daily schedule.
-- [Live Query Server](./packages/lqs/Readme.md): Provides access to the inverted index to the DDPP and the DAPP.
+- [Live Query Server](./packages/lqs): Provides access to the inverted index to the DDPP and the DAPP.
 - Distributed Data Pack Publisher (Coming Soon): Publishes the dataset on IPFS ready for consumption by the DAPP.
 - DAPP (Coming Soon): Presents the data to users, mainly from IPFS may also access directly the LQS for advanced queries.
 
