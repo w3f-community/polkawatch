@@ -52,6 +52,12 @@ export class ArchiveService {
         return this.client.query(query, params).toPromise();
     }
 
+    /**
+     * We want to select which queries we cache, as we know that queries that target the "edge" of the blockchain
+     * are changing all the time, while queries that target older blocks are efficient and safe to cache.
+     * @param query
+     * @param params
+     */
     async cachedQuery(query, params): Promise<any> {
         return this.cachedClient.query(query, params).toPromise();
     }
@@ -77,13 +83,18 @@ export class ArchiveService {
         let trace = 'session';
 
         if (!reward.previousHeartbeat) {
+            // A Heartbeat event was not traced during archive. We resort to finding the closest heartbeat
+            // from any libp2p peer associated with the validator.
             const peers = await this.getPeersByValidatorId(reward.validator.id);
 
             if (peers) {
                 trace = 'peer_prev';
+                // Ideally we want the heartbeats that came just before the rewards event.
                 let lhb = await this.getLastHeartbeatsByPeers(reward.blockNumber, peers);
                 if (!lhb.length) {
                     trace = 'peer_post';
+                    // If we could not find any HB before the reward event, we take the first we ever received from
+                    // Any of those peers.
                     lhb = await this.getFirstHeartbeatsByPeers(peers);
                 }
 
@@ -92,6 +103,9 @@ export class ArchiveService {
             }
         }
 
+        // We put on the dataset which tracing we used to resolve this relationship
+        // Later on we could analyse the quality of this "trace", with an analysis of rewards distribution by
+        // Heartbeat trace.
         reward.previousHeartbeatTrace = trace;
 
         if (this.tracing) {
@@ -102,12 +116,22 @@ export class ArchiveService {
         return reward;
     }
 
+    /**
+     * Returns the libp2p peers associated with a validator ID. Those are traced from heartbeat events after the
+     * validator is resolved using the authority id.
+     * @param validatorId
+     */
     async getPeersByValidatorId(validatorId): Promise<Array<any>> {
         return this.cachedQuery(PEERS_BY_VALIDATOR_ID_QUERY, {
             validatorId: validatorId,
         }).then((results) => results.data.peers.nodes.map((peer) => peer.id));
     }
 
+    /**
+     * Returns the last hearbeat received from a group of peers before a given block number.
+     * @param blockNumberLimit
+     * @param peers
+     */
     async getLastHeartbeatsByPeers(
         blockNumberLimit,
         peers: Array<string>,
@@ -118,6 +142,10 @@ export class ArchiveService {
         }).then((results) => results.data.heartbeats.nodes);
     }
 
+    /**
+     * Returns the first heartbeat ever received from a group of peers.
+     * @param peers
+     */
     async getFirstHeartbeatsByPeers(peers: Array<string>): Promise<Array<any>> {
         return this.cachedQuery(FIRST_HEARTBEAT_BY_PEERS_QUERY, {
             peers: peers,
@@ -125,7 +153,8 @@ export class ArchiveService {
     }
 }
 
-// TODO: starting block, will try to query inside history_depth
+// The actual GraphQL queries associates with the methods above follow:
+
 const REWARDS_QUERY = gql`
   query ($batchSize: Int!, $cursor: Cursor, $startBlockNumber: BigFloat) {
     rewards(

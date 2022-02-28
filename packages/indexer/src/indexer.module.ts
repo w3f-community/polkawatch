@@ -13,6 +13,9 @@ import { ElasticService, ElasticApiClientService } from './elastic.service';
 
 import * as Joi from 'joi';
 
+/**
+ * The NextJS module, declares the objects for Dependency Injection.
+ */
 @Module({
     imports: [
         ConfigModule.forRoot({

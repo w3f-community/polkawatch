@@ -31,29 +31,39 @@ export class IndexerSchedulerService {
         // ignore
     }
 
+    /**
+     * We will run the indexing every night a 3 in the morning.
+     */
     @Cron('0 0 3 * * *')
     async processRewardsDaily() {
         if(!this.processing) this.rewardProcessing();
     }
 
+    /**
+     * We will also run the indexing right after starting the process.
+     */
     @Timeout(2000)
     async processRewardsOnStart() {
         if(!this.processing) return this.rewardProcessing();
     }
 
+    /**
+     * Gets the rewards in history depth range in batches for processing.
+     */
     async rewardProcessing() {
         let qr: QueryRet = { hasNext: true, cursor: undefined };
         let total = 0;
 
-        // Simple mutex to avoid process overlap due to an agressive scheduling or start/scheduling overlap
+        // Simple mutex to avoid process overlap due to an aggressive scheduling or start/scheduling overlap
         this.processing = true;
         this.logger.log('Starting Rewards Processing');
+        // We reindex history depth bocks, that is around 1.5M in Polkadot.
         const startBlockNumber = await this.substrateHistory.historyDepthStartBlock();
 
         while (qr.hasNext) {
             // We will run the query in batches
             // Each batch will be processed asynchronously
-            // Return Query Status, and the results of processing all reward events
+            // Return Query Status, required for cursor/batch processing, and the results of processing all reward events
             qr = await this.archiveService
                 .queryRewards({ batchSize: 10, cursor: qr.cursor, startBlockNumber: startBlockNumber })
                 .then((results) =>
@@ -73,7 +83,7 @@ export class IndexerSchedulerService {
                     ]),
                 )
                 .then((result) => {
-                    // We compute the number of records
+                    // We compute the number of rewards processed
                     total += result[1].length;
                     this.logger.debug(
                         `processing rewards ${total} so far, last: ${

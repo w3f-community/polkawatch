@@ -15,6 +15,11 @@ export class ElasticService {
         // empty
     }
 
+    /**
+     * We perform an UPSERT (update or insert) of the Reward event. Note that the indexer handles live data and it is
+     * scheduled to run everyday for history depth blocks.
+     * @param reward
+     */
     async persistReward(reward):Promise<any> {
         if(this.tracing) this.logger.debug(`Indexing reward ${reward.id}`);
 
@@ -67,6 +72,9 @@ export class ElasticService {
     }
 }
 
+/**
+ * This provider offers a ready setup Elastic Client. Indexes will be created if they don't exist.
+ */
 export const ElasticApiClientService = {
     provide: 'ELASTIC_API_CLIENT',
     useFactory: async (configService: ConfigService) => {
@@ -96,6 +104,9 @@ export const ElasticApiClientService = {
     inject: [ConfigService],
 };
 
+/**
+ * These are the reward event properties as specified by Elasticsearch
+ */
 const REWARD_PROPERTIES = {
 
     date: { type: 'date' },

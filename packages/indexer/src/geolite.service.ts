@@ -17,6 +17,10 @@ export class GeoliteService {
         // nothing
     }
 
+    /**
+     * We will process every reward event adding Geolocation and Networking information (ASN)
+     * @param reward
+     */
     async processReward(reward):Promise<any> {
         if(reward.previousHeartbeat) {
             if (reward.previousHeartbeat.externalIPV46Addresses) {
@@ -28,11 +32,17 @@ export class GeoliteService {
             }
         }
 
+        // On top of "Raw" data as returned by the Database, we add the preferred display form of this information.
         reward = this.addGeoCountriesDisplay(reward);
         reward = this.addGeoASNDisplay(reward);
         return reward;
     }
 
+    /**
+     * Adds the Geographic information to display in its preferred form. Also assures that when not traced they rewards
+     * are labelled accordingly.
+     * @param reward
+     */
     addGeoCountriesDisplay(reward) {
         const display = {
             group_code: 'NOT_TRACED',
@@ -53,6 +63,12 @@ export class GeoliteService {
         reward.geo_country_display = display;
         return reward;
     }
+
+    /**
+     * Adds the Networking information to display in its preferred form. Also assures that when not traced they rewards
+     * are labelled accordingly.
+     * @param reward
+     */
 
     addGeoASNDisplay(reward) {
         const display = {
@@ -78,6 +94,9 @@ export class GeoliteService {
     /**
      * This GeoIP solution does not implement this concept, but a minimal implementation can be
      * provided by pattern matching top brand names in the space.
+     *
+     * This is required because the same company group will use multiple networks.
+     *
      * @param asnName
      */
     getASNNetworkGroupName(asnName) {
@@ -106,6 +125,10 @@ export class GeoliteService {
 
 }
 
+/**
+ * This lightweight provider will open the GeoIP database after downloading it on first use or if there is
+ * an update.
+ */
 export const GeoliteDBService = {
     provide: 'GEOLITE_DB',
     useFactory: async () => {

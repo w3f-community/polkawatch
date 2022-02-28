@@ -21,7 +21,7 @@ import { AccountId } from '@polkadot/types/interfaces';
  * Essentially we are treating HistoryDepth queries as an "external" datasource
  * to merge data from.
  *
- * It might be possible to migrate some of this data to pass-1 later on.
+ * It might be possible to migrate some of this traces to pass-1 later on.
  *
  */
 
@@ -31,11 +31,13 @@ export class SubstrateHistoryService {
     private readonly tracing = false;
     private readonly logger = new Logger(SubstrateHistoryService.name);
 
+    // We will cache some expensive Substrate queries
     private exposureCache;
     private prefsCache;
     private validatorInfoCache;
 
     constructor(@Inject('SUBSTRATE_API') private api, private configService: ConfigService) {
+        // When caching we are sizing with the following assumptions
         // We consider 10 eras being claimed by 300 validators
         this.exposureCache = new LRU({ max:3000 });
         this.prefsCache = new LRU({ max:3000 });
@@ -89,9 +91,14 @@ export class SubstrateHistoryService {
         const exposureByStaker = await this.getCachedExposureByStaker(era, validatorId);
         const validatorPrefs = await this.getCachedValidatorPrefs(era, validatorId);
         const exposure = exposureByStaker[reward.nominator];
+
+        // This message may result also if the payout - reward trace is an error
+        // becuase we dont find in history-depth a matching record of exposure
         if(!exposure) this.logger.warn(`No EXPOSURE traced in ${reward.id}`);
         reward.nominationExposure = exposureByStaker[reward.nominator];
         reward.comission = validatorPrefs.comission;
+
+        // Here we try to caracterize the reward and validator for later analysis or grouping
         reward.validatorType = validatorPrefs.comission == 1 ? 'custodial' : 'public';
         reward.rewardType = reward.validator.id == reward.nominator ? 'validator comission' : 'staking reward';
 
@@ -99,6 +106,11 @@ export class SubstrateHistoryService {
         return reward;
     }
 
+    /**
+     * Cached version of Exposure by Staker
+     * @param era
+     * @param validatorId
+     */
     async getCachedExposureByStaker(era, validatorId):Promise<any> {
         const cacheKey = `exposure-${validatorId}-${era}`;
         
@@ -109,6 +121,11 @@ export class SubstrateHistoryService {
         }
     }
 
+    /**
+     * Returns the exposure of nominators for a given era and validator id.
+     * @param era
+     * @param validatorId
+     */
     async getExposureByStaker(era, validatorId):Promise<any> {
         if (this.tracing) this.logger.debug(`Requesting eraStakers for ${validatorId} era ${era}`);
         return this.api.query.staking.erasStakersClipped(era, validatorId)
@@ -120,6 +137,12 @@ export class SubstrateHistoryService {
             });
     }
 
+
+    /**
+     * Cached version of Validator Preferences
+     * @param era
+     * @param validatorId
+     */
     async getCachedValidatorPrefs(era, validatorId):Promise<any> {
         const cacheKey = `prefs-${validatorId}-${era}`;
 
@@ -130,7 +153,11 @@ export class SubstrateHistoryService {
         }
     }
 
-
+    /**
+    * Returns validator preferences for a given era
+    * @param era
+    * @param validatorId
+    */
     async getValidatorPrefs(era, validatorId):Promise<any> {
         if (this.tracing) this.logger.debug(`Requesting validatorPrefs for ${validatorId} era ${era}`);
         return this.api.query.staking.erasValidatorPrefs(era, validatorId)
@@ -141,7 +168,13 @@ export class SubstrateHistoryService {
     }
 
 
+    /**
+     * Returns the public IP addresses associated with a reward event.
+     * @param reward
+     */
     addPublicIPAddresses(reward) {
+
+        // We need a previous HeartBeat event traced to this reward in order to workout this.
         if(!reward.previousHeartbeat) {
             this.logger.warn(`No heartbeat traced for reward ${reward.id}, IP addressing not possible.`);
             return reward;
@@ -150,8 +183,11 @@ export class SubstrateHistoryService {
         const externalAddress = JSON.parse(reward.previousHeartbeat.externalAddresses);
 
         const publicAddresses = externalAddress.map(address => {
-
+            // We unpack the Address if it is in Hex, which some are
             if(isHex(address)) address = u8aToString(hexToU8a(address));
+
+            // There is a 1-char prefix added to the libp2p Multiaddress which we remove.
+            // No idea whast it is about, we could not find
             if(address[0] != '/' && address[1] == '/') address = address.substring(1);
 
             try{
@@ -161,6 +197,7 @@ export class SubstrateHistoryService {
                     if (!is_private_ip(ipv46a)) return ipv46a;
                 } else {this.logger.warn(`Unexpected address type ${address} for ${reward.id}\``);}
             } catch (e) {
+                // This is a data quality warning, we must of course always be able to parse the address.
                 this.logger.warn(`Could not parse address ${address} for ${reward.id}`);
             }
 
@@ -173,11 +210,19 @@ export class SubstrateHistoryService {
         return reward;
     }
 
+    /**
+     * Returns the validator information for a reward.
+     * @param reward
+     */
     async addValidatorInfo(reward): Promise<any> {
         reward.validator.info = await this.getCachedValidatorInfo(reward.validator.id);
         return reward;
     }
 
+    /**
+     * Cached version of validator info.
+     * @param reward
+     */
     async getCachedValidatorInfo(validatorId):Promise<any> {
         const cacheKey = `info-${validatorId}`;
 
@@ -253,7 +298,7 @@ export class SubstrateHistoryService {
     }
 
     /**
-     * Workout
+     * Workout the group name of the validator
      * @param vi the available validator information
      */
     getValidatorGroupName(vi) {
@@ -282,12 +327,19 @@ export class SubstrateHistoryService {
         else return field.Raw;
     }
 
+    /**
+     * We close the api connection on module destroy
+     */
     async onModuleDestroy() {
         this.logger.log('Closing API Connection...');
         await this.api.disconnect();
     }
 }
 
+/**
+ * Associated provider of the RPC api object.
+ * Will return the connected api object after configuration.
+ */
 export const SubstrateAPIService = {
     provide: 'SUBSTRATE_API',
     useFactory: async (configService: ConfigService) => {
