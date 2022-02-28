@@ -36,7 +36,7 @@ daily schedule.
 Polkawatch is a workspace project with multiple packages, however, testing can be triggered from the root of the project.
 Yarn commands are delegated to the child packages.
 
-In order to run the unit tests run:
+In order to run the unit tests checkout the project and do:
 
 - ```yarn test``` to run all unit tests
 - ```yarn test:e2e``` tp run end-to-end tests in packages that provide them
@@ -68,7 +68,7 @@ You can access the following playgrouds / UIs to monitor de indexing process and
 
 In order to develop locally you can use: 
 
-1. Build all components from root with `` yarn build``
+1. Build all components from root with ``yarn build``
 2. You can run packages locally, i.e in your IDE, and run all other dependencies with ```yarn docker:dev```. The Indexer and LQS servers
 will not be started. If you want to release more resources for development you can optionally stop the Archive and 
 Kibana too.
@@ -76,7 +76,7 @@ Kibana too.
 
 ### Deployment 
 
-For deployment instructions check the [deployment tutorial](./deploy/Readme.md). 
+For deployment instructions check the [deployment tutorial](./deploy ). 
 
 ## License and Copyright
 
