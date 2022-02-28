@@ -1,6 +1,6 @@
 # Deployment Tutorial
 
-A ```docker-compose``` is provided with the actual services required for deployment.
+A ```docker-compose``` for production is provided in this folder with the actual services required for deployment.
 
 Polkawatch can simply be deployed by running:
 
