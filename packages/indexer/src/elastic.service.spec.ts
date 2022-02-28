@@ -30,6 +30,10 @@ describe('ElasticService', () => {
         service = module.get<ElasticService>(ElasticService);
     });
 
+    /**
+     * We only test for right instantiation of the module.
+     * Elastic only writes the reward to elasticsearch with is an external service.
+     */
     it('should be defined', () => {
         expect(service).toBeDefined();
     });

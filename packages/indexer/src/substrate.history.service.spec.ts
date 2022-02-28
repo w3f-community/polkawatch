@@ -3,11 +3,9 @@
 
 
 import { Test, TestingModule } from '@nestjs/testing';
-import { SubstrateHistoryService, SubstrateAPIService } from './substrate.history.service';
+import { SubstrateHistoryService } from './substrate.history.service';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
-import { Multiaddr } from 'multiaddr';
-import { hexToU8a, isHex, u8aToString } from'@polkadot/util';
 
 
 // The API Connection may take time when connecting from far away
@@ -26,7 +24,10 @@ describe('SubstrateService', () => {
                     }),
                 }),
             ],
-            providers: [SubstrateAPIService, SubstrateHistoryService],
+            providers: [{
+                provide: 'SUBSTRATE_API',
+                useValue: {},
+            }, SubstrateHistoryService],
         }).compile();
 
         service = module.get<SubstrateHistoryService>(SubstrateHistoryService);
@@ -34,28 +35,6 @@ describe('SubstrateService', () => {
 
     it('should be defined', () => {
         expect(service).toBeDefined();
-    });
-
-    /**
-     * The polkadot API doesn't exactly use Multiadress as defined in libp2p
-     * The documentation does not enter into detail of specific usage
-     * Research of the substrate code is required.
-     * This test cover the required cases anyway.
-     */
-    it('Will test the MultiAddress library for required functionality', () => {
-        const addr = new Multiaddr('/ip4/127.0.0.1/udp/1234');
-        expect(addr.nodeAddress().family).toBe(4);
-        expect(addr.nodeAddress().address).toBe('127.0.0.1');
-        expect(Multiaddr.isMultiaddr(addr)).toBeTruthy();
-        // no clue what this first character is or who is introducing it in the address
-        // does not show up in the Multiaddress speficiation
-        const addr2 = new Multiaddr('l/ip4/51.163.1.174/tcp/30004'.substring(1));
-        expect(Multiaddr.isMultiaddr(addr2)).toBeTruthy();
-        // earlier HB cotains packed addresses
-        const addr3 = '0x8c2f6970362f323030313a343164303a3330333a333738633a3a2f7463702f3330333333';
-        expect(isHex(addr3)).toBeTruthy();
-        const ma3 = new Multiaddr(u8aToString(hexToU8a(addr3)).substring(1));
-        expect(Multiaddr.isMultiaddr(ma3)).toBeTruthy();
     });
 
     it('will test public ip address parsing', ()=>{
@@ -77,7 +56,6 @@ describe('SubstrateService', () => {
 
     /**
      * Validator info appears and is presented in several configurations
-     * We will test
      */
     it('Will fetch validator info of a well known validator', async ()=>{
 
