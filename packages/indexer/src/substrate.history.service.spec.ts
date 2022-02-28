@@ -3,7 +3,7 @@
 
 
 import { Test, TestingModule } from '@nestjs/testing';
-import { SubstrateHistoryService } from './substrate.history.service';
+import { SubstrateHistoryService, SubstrateAPIService } from './substrate.history.service';
 import { ConfigModule } from '@nestjs/config';
 import * as Joi from 'joi';
 
@@ -24,10 +24,7 @@ describe('SubstrateService', () => {
                     }),
                 }),
             ],
-            providers: [{
-                provide: 'SUBSTRATE_API',
-                useValue: {},
-            }, SubstrateHistoryService],
+            providers: [SubstrateAPIService, SubstrateHistoryService],
         }).compile();
 
         service = module.get<SubstrateHistoryService>(SubstrateHistoryService);
