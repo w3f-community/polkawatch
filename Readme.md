@@ -56,6 +56,9 @@ with ```yarn docker:archive```. You can also do both. Getting data will simply d
 blocks of chain data already archived (first pass only).
 3. You can run all the components with ``yarn docker:testdeploy`` 
 
+After triggering ```testdeploy```, you will notice that the indexer starts ```processing rewards```, use the
+LQS API UI/playground and run queries as the 2nd pass indexing takes place.
+
 ### Available playgrounds
 
 You can access the following playgrouds / UIs to monitor de indexing process and/or test your development.
