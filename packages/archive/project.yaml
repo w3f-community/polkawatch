@@ -12,7 +12,10 @@ network:
   genesisHash: '0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3'
 dataSources:
   - kind: substrate/Runtime
-    startBlock: 8500000
+    # For testing use minimum the last 500K blocks
+    # 1.5M for safely storing history depth
+    # more for getting IP history before history_depth starts
+    startBlock: 7000000
     mapping:
       file: ./dist/index.js
       handlers:
