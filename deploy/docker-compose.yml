@@ -39,6 +39,10 @@ services:
       interval: 3s
       timeout: 5s
       retries: 10
+    command:
+      - -f=/app
+      - --db-schema=app
+      - --unsafe=true
   archive-graphql:
     image: onfinality/subql-query:v0.12.0
     ports:
