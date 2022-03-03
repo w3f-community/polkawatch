@@ -2,6 +2,7 @@ FROM node:16 AS builder
 WORKDIR /app
 RUN yarn global add typescript rimraf
 COPY ./package.json ./
+COPY ./yarn.lock ./
 RUN yarn install
 COPY . .
 COPY tsconfig.docker.json tsconfig.json

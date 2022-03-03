@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "build:workspace": "yarn build",
+    "lock:workspace": "cp ../../yarn.lock .",
     "test:workspace": "jest --passWithNoTests",
     "test:workspace:e2e": "yarn test:e2e:regression",
     "lint:workspace:test": "yarn lint:test",

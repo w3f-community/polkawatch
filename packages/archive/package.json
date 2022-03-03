@@ -4,6 +4,7 @@
   "main": "dist/index.js",
   "scripts": {
     "build:workspace": "yarn codegen && yarn build",
+    "lock:workspace": "cp ../../yarn.lock .",
     "test:workspace": "yarn codegen && jest --forceExit",
     "test:workspace:e2e": "echo Not required.",
     "lint:workspace:test": "yarn lint:test",

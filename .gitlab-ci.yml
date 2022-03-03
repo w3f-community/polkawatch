@@ -57,9 +57,10 @@ polkawatch docker image deployment:
   script:
     # Get the version from the artifacts
     - APP_VERSION=$(cat .APP_VERSION)
-    # Build the Docker Containers
+    # Build the Docker Containers, lock the individual packages
     - >
       for PACKAGE in archive indexer lqs; do
+        cp yarn.lock packages/${PACKAGE}; 
         docker build -t $CI_REGISTRY/valletech/polkawatch-${PACKAGE}:latest -t $CI_REGISTRY/valletech/polkawatch-${PACKAGE}:${APP_VERSION} packages/${PACKAGE};
       done
     # Push the docker containers to the registry
