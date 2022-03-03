@@ -36,8 +36,9 @@ daily schedule.
 Polkawatch is a workspace project with multiple packages, however, testing can be triggered from the root of the project.
 Yarn commands are delegated to the child packages.
 
-In order to run the unit tests checkout the project and do:
+In order to run the unit tests clone the project and do:
 
+- ```yarn install``` to install all node packages
 - ```yarn test``` to run all unit tests
 - ```yarn test:e2e``` tp run end-to-end tests in packages that provide them
 
