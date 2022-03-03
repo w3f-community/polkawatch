@@ -40,6 +40,7 @@
     "cache-manager": "^3.6.0",
     "cross-fetch": "^3.1.5",
     "geolite2-redist": "^2.0.4",
+    "global-agent": "^3.0.0",
     "graphql": "^16.3.0",
     "joi": "^17.6.0",
     "lru-cache": "^7.4.0",

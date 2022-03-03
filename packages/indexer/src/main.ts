@@ -6,6 +6,11 @@ import { NestFactory } from '@nestjs/core';
 import { IndexerModule } from './indexer.module';
 import { ConfigService } from '@nestjs/config';
 
+// Adds support for proxying, required in production
+
+import 'global-agent/bootstrap';
+
+
 /**
  * NestJS application bootstrap
  */
