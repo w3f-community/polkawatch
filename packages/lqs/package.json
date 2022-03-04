@@ -10,6 +10,7 @@
     "lint:workspace:test": "yarn lint:test",
     "prebuild": "rimraf dist",
     "build": "nest build",
+    "build:client": "LQS_BUILD_OPENAPI_CLIENT=true yarn test:e2e:regression && docker build -t openapi_client_build --build-arg USER_ID=$(id -u) --build-arg GROUP_ID=$(id -g) openapi-client && docker run -v ${PWD}/lqs-client:/local/out openapi_client_build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
