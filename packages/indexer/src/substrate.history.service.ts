@@ -38,10 +38,10 @@ export class SubstrateHistoryService {
 
     constructor(@Inject('SUBSTRATE_API') private api, private configService: ConfigService) {
         // When caching we are sizing with the following assumptions
-        // We consider 10 eras being claimed by 300 validators
-        this.exposureCache = new LRU({ max:3000 });
-        this.prefsCache = new LRU({ max:3000 });
-        this.validatorInfoCache = new LRU({ max:300 });
+        // We consider 5 eras being claimed by 300 validators
+        this.exposureCache = new LRU({ max:1500 });
+        this.prefsCache = new LRU({ max:1500 });
+        this.validatorInfoCache = new LRU({ max:200 });
     }
 
     /**
