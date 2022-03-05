@@ -106,14 +106,15 @@ describe('LQS end-to-end testing', () => {
                 });
         });
 
-        it('Will create openapi document', async () => {
+        // For convenience we generate the openapi specification document
+        // only after having verified that some e2e tests are successful.
+
+        it('Will create openapi specification', async () => {
             const doc = configure(app, true);
-            if (process.env.LQS_BUILD_OPENAPI_CLIENT === 'true') {
-                const outPath = 'openapi-client/api-spec.json';
-                fs.writeFile(outPath, JSON.stringify(doc), (error) => {
-                    if (error) throw error;
-                });
-            }
+            const outPath = 'lqs-api-spec.json';
+            fs.writeFile(outPath, JSON.stringify(doc), (error) => {
+                if (error) throw error;
+            });
         });
     });
 });
