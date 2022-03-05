@@ -34,7 +34,7 @@ polkawatch release:
     # Set workspace packages to the same version
     - APP_VERSION=$(yarn -s pkg:version)
     - yarn release:setversion ${APP_VERSION}
-    - git commit packages -m "Released workspace packages version ${APP_VERSION}"
+    - git commit packages -m "[skip-ci] Released workspace packages version ${APP_VERSION}"
     # Push to the branch the triggered
     - git push porigin HEAD:${CI_COMMIT_REF_NAME} --tags
     # Pass the version to the next stage
