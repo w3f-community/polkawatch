@@ -41,3 +41,6 @@ lerna-debug.log*
 
 #yarn-lock
 yarn.lock
+
+# API Client
+lqs-api-spec.json

@@ -9,9 +9,11 @@ import { IndexQueryService } from '../src/lqs.index.service';
 import { configure } from '../src/lqs.config';
 
 import { loadFixture, saveFixture } from './regression.tools';
+import * as fs from 'fs';
 
 describe('LQS end-to-end testing', () => {
     let httpServer;
+    let app;
 
     beforeEach(async () => {
 
@@ -19,7 +21,7 @@ describe('LQS end-to-end testing', () => {
             imports: [AppModule],
         }).compile();
 
-        const app = moduleFixture.createNestApplication();
+        app = moduleFixture.createNestApplication();
 
         // Configure the app as in production and setup OpenAPI testing
         jestOpenAPI(configure(app, false));
@@ -102,6 +104,17 @@ describe('LQS end-to-end testing', () => {
                 .then(async (response) => {
                     expect(response.statusCode).toBe(400);
                 });
+        });
+
+        // For convenience we generate the openapi specification document
+        // only after having verified that some e2e tests are successful.
+
+        it('Will create openapi specification', async () => {
+            const doc = configure(app, true);
+            const outPath = 'lqs-api-spec.json';
+            fs.writeFile(outPath, JSON.stringify(doc), (error) => {
+                if (error) throw error;
+            });
         });
     });
 });
