@@ -31,6 +31,8 @@ polkawatch release:
   script:
     # Increase the release number
     - yarn version --patch --message "[skip-ci] New Release %s"
+    # Set workspace packages to the same version
+    - yarn release:setversion $(yarn -s pkg:version)
     # Push to the branch the triggered
     - git push porigin HEAD:${CI_COMMIT_REF_NAME} --tags
     # Pass the version to the next stage
