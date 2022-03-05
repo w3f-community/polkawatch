@@ -18,6 +18,7 @@
     "test": "yarn workspaces run test:workspace",
     "test:e2e": "yarn workspaces run test:workspace:e2e",
     "lint:test": "yarn workspaces run lint:workspace:test",
-    "pkg:version": "echo $npm_package_version"
+    "pkg:version": "echo $npm_package_version",
+    "release:setversion": "yarn workspaces run version:workspace"
   }
 }

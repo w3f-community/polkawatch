@@ -1,10 +1,11 @@
 {
   "name": "lqs",
-  "version": "0.1.0",
+  "version": "0.4.4",
   "private": true,
   "scripts": {
     "build:workspace": "yarn build",
     "lock:workspace": "cp ../../yarn.lock .",
+    "version:workspace": "yarn version --no-git-tag-version --new-version ",
     "test:workspace": "jest --passWithNoTests",
     "test:workspace:e2e": "yarn test:e2e:regression",
     "lint:workspace:test": "yarn lint:test",
