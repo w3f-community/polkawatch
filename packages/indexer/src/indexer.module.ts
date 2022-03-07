@@ -28,6 +28,7 @@ import * as Joi from 'joi';
                 INDEXER_ARCHIVE_HOST: Joi.string().default('localhost'),
                 INDEXER_ARCHIVE_PORT: Joi.number().default(3000),
                 INDEXER_SUBSTRATE_RPC_URL: Joi.string().default('wss://polkadot.valletech.eu'),
+                INDEXER_SUBSTRATE_HISTORY_DEPTH_MARGIN: Joi.number().default(0),
                 INDEXER_ELASTIC_PORT: Joi.number().default(9200),
                 INDEXER_ELASTIC_HOST: Joi.string().default('localhost'),
             }),

@@ -56,13 +56,18 @@ export class SubstrateHistoryService {
      * history depth is considered a generous time period for live data to settle, and 2-pass
      * indexing should re-index from history depth every day.
      *
+     * in production we observed that when attempting to indexed from sharp history depth, some
+     * involved blocks were already out of history depth (no exposure found, i.e.). history depth
+     * margin is a tunable parameter to shorten history depth in eras.
+     *
      */
     async historyDepthStartBlock():Promise<number> {
         const historyDepth = await this.api.query.staking.historyDepth();
+        const historyMargin = this.configService.get('INDEXER_SUBSTRATE_HISTORY_DEPTH_MARGIN');
         const epochDuration = await this.api.consts.babe.epochDuration.toNumber();
         const sessionsPerEra = await this.api.consts.staking.sessionsPerEra.toNumber();
         const blocksPerEra = sessionsPerEra * epochDuration;
-        const historyBlocks = blocksPerEra * historyDepth;
+        const historyBlocks = blocksPerEra * (historyDepth - historyMargin);
         const currentBlockNumber = await this.api.query.system.number();
         const startBlock = currentBlockNumber - historyBlocks;
         this.logger.log(`History Depth starts at block: ${startBlock}`);
