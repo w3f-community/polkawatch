@@ -15,4 +15,4 @@ VOLUME /local/out
 
 ENTRYPOINT ["openapi-generator-cli"]
 
-CMD ["generate", "-i", "/local/api-spec.json", "--generator-name", "typescript-axios", "-o", "/local/out", "--additional-properties=useSingleRequestParameter=true"]
+CMD ["generate", "-i", "/local/api-spec.json", "--generator-name", "typescript-axios", "-o", "/local/out", "--additional-properties=supportsES6=true"]
