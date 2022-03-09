@@ -1,7 +1,7 @@
 // Copyright 2021-2022 Valletech AB authors & contributors
 // SPDX-License-Identifier: Apache-2.0
 
-import {ApiProperty, PickType} from '@nestjs/swagger';
+import { ApiProperty, PickType } from '@nestjs/swagger';
 import { IsNumber, IsOptional } from 'class-validator';
 
 /**

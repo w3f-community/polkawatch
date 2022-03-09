@@ -1,9 +1,12 @@
+// Copyright 2021-2022 Valletech AB authors & contributors
+// SPDX-License-Identifier: Apache-2.0
+
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../lqs.controller';
-import {AggregatedIndexData, IndexQueryService, QueryTemplate} from '../lqs.index.service';
-import {AboutData, RewardsByRegion} from './query.responses.dtos';
-import {AboutDataQueryDto, QueryParameters, RewardDistributionQueryDto} from './query.parameters.dtos';
+import { IndexQueryService, QueryTemplate } from '../lqs.index.service';
+import { AboutData } from './query.responses.dtos';
+import { AboutDataQueryDto } from './query.parameters.dtos';
 import { plainToInstance } from 'class-transformer';
 
 @ApiTags('about')

@@ -4,9 +4,9 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../lqs.controller';
-import {AggregatedIndexData, IndexQueryService, QueryTemplate} from '../lqs.index.service';
+import { AggregatedIndexData, IndexQueryService, QueryTemplate } from '../lqs.index.service';
 import { RewardsByNetworkProvider } from './query.responses.dtos';
-import {QueryParameters, RewardDistributionQueryDto} from './query.parameters.dtos';
+import { RewardDistributionQueryDto } from './query.parameters.dtos';
 import { plainToInstance } from 'class-transformer';
 
 @ApiTags('network')
