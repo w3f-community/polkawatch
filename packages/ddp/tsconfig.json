@@ -18,7 +18,8 @@
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@lqs/client": ["../lqs-client"]
+      "@lqs/client": ["../lqs-client"],
+      "@lqs/types": ["../lqs/src/queries/query.responses.dtos"]
     }
   },
 }

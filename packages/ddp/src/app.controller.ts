@@ -6,12 +6,29 @@ import {Configuration,
   RewardDistributionQueryDto
 } from "@lqs/client";
 
+import {RewardsByCountry, RewardsByRegion} from "@lqs/types";
+
+import {ApiOkResponse, ApiOperation, ApiResponseProperty, ApiProperty} from "@nestjs/swagger";
+
 // TODO: here we have to test the required features:
 // - bundling: a single endpoint returns several calls OK
 // - transformation: for charting libraries
 // - dpp client for use from react
 // - client can connect to dpp or IPFS holding same contents
 // - compression: responses are compressed and served from .gz urls (OPTIONAL)
+
+class GeoBundle {
+  @ApiProperty({
+    type: RewardsByCountry,
+    isArray: true
+  })
+  countries: RewardsByCountry[]
+  @ApiProperty({
+    type: RewardsByRegion,
+    isArray: true
+  })
+  regions: RewardsByRegion[]
+}
 
 @Controller()
 export class AppController {
@@ -27,7 +44,11 @@ export class AppController {
   }
 
   @Get("test")
-  async getTest(): Promise<any> {
+  @ApiOperation({
+    description: 'Get the distribution of DOT Rewards per Country',
+  })
+  @ApiOkResponse({ description: 'The distribution of DOT Rewards per Country', type: RewardsByCountry, isArray: true })
+  async getTest(): Promise<RewardsByCountry[]> {
 
     let api=new GeographyApi(this.conf);
 
@@ -41,8 +62,13 @@ export class AppController {
     return countries.data ;
   }
 
+
   @Get("bundle")
-  async getBundle(): Promise<any>{
+  @ApiOperation({
+    description: 'Get the distribution of DOT Rewards per Country',
+  })
+  @ApiOkResponse({ description: 'The distribution of DOT Rewards per Country', type: GeoBundle, isArray: false })
+  async getBundle(): Promise<GeoBundle>{
     const api=new GeographyApi(this.conf);
 
     const params:RewardDistributionQueryDto = {
@@ -63,5 +89,5 @@ export class AppController {
       countries:countries.data,
     };
   }
-
 }
+
