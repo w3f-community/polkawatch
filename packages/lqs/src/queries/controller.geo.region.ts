@@ -4,9 +4,9 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BaseController } from '../lqs.controller';
-import { AggregatedIndexData, IndexQueryService } from '../lqs.index.service';
+import {AggregatedIndexData, IndexQueryService, QueryTemplate} from '../lqs.index.service';
 import { RewardsByRegion } from './query.responses.dtos';
-import { RewardDistributionQueryDto } from './query.parameters.dtos';
+import {QueryParameters, RewardDistributionQueryDto} from './query.parameters.dtos';
 import { plainToInstance } from 'class-transformer';
 
 @ApiTags('geography')
@@ -15,7 +15,7 @@ export class GeoRegionController extends BaseController {
     constructor(protected queryService: IndexQueryService) {
         super(queryService);
     }
-    
+
     @Post('geo/region')
     @ApiOperation({
         description: 'Get the distribution of DOT Rewards per Region',
@@ -26,7 +26,7 @@ export class GeoRegionController extends BaseController {
         @Body() params: RewardDistributionQueryDto): Promise<Array<RewardsByRegion>> {
         return (await super.runQuery(
             params,
-            this.queryTemplate,
+            this.queryTemplate as QueryTemplate,
             this.queryResponseTransformer,
         )) as Array<RewardsByRegion>;
     }
