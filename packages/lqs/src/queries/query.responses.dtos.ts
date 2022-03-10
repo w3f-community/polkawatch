@@ -37,7 +37,7 @@ export class AboutData {
     @ApiResponseProperty()
     @Transform(({ value }) => value.value, { toClassOnly: true })
     @Expose({ name: 'latest_era' })
-        DotRewards: number;
+        LastestEra: number;
 }
 
 /**
@@ -83,10 +83,11 @@ export class RewardsByNetworkProvider {
     @Transform(({ value }) => value.value, { toClassOnly: true })
     @Expose({ name: 'reward' })
         DotRewards: number;
+
 }
 
 /**
- * Rewards by Computing Network Provider
+ * Rewards by Validator Group
  */
 
 export class RewardsByValidationGroup {
@@ -98,4 +99,15 @@ export class RewardsByValidationGroup {
     @Transform(({ value }) => value.value, { toClassOnly: true })
     @Expose({ name: 'reward' })
         DotRewards: number;
+
+    @ApiResponseProperty()
+    @Transform(({ value }) => value.values['50.0'], { toClassOnly: true })
+    @Expose({ name: 'median_nomination' })
+        DotMedianNomination: number;
+
+    @ApiResponseProperty()
+    @Transform(({ value }) => value.value, { toClassOnly: true })
+    @Expose({ name: 'validators_in_group' })
+        ValidatorsInGroup: number;
+
 }
