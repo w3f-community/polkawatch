@@ -40,37 +40,60 @@ export class ValidatorGroupController extends BaseController {
 
     queryTemplate(params: RewardDistributionQueryDto) {
         return {
-            aggs: {
+            'aggs': {
                 polkawatch: {
-                    terms: {
-                        field: 'validator_parent_name',
-                        order: {
+                    'terms': {
+                        'field': 'validator_parent_name',
+                        'order': {
                             reward: 'desc',
                         },
-                        size: params.TopResults,
+                        'size': params.TopResults,
                     },
-                    aggs: {
+                    'aggs': {
                         reward: {
-                            sum: {
-                                script: {
-                                    source: 'doc[\'reward\'].value/10000000000.0',
-                                    lang: 'painless',
+                            'sum': {
+                                'script': {
+                                    'source': 'doc[\'reward\'].value/10000000000.0 ',
+                                    'lang': 'painless',
                                 },
+                            },
+                        },
+                        median_nomination: {
+                            'percentiles': {
+                                'script': {
+                                    'source': 'if (doc[\'nomination_value\'].size()!=0) return doc[\'nomination_value\'].value/10000000000.0;',
+                                    'lang': 'painless',
+                                },
+                                'percents': [
+                                    50,
+                                ],
+                            },
+                        },
+                        validators_in_group: {
+                            'cardinality': {
+                                'field': 'validator',
                             },
                         },
                     },
                 },
             },
-            size: 0,
-            query: {
-                bool: {
-                    filter: {
-                        range: {
-                            era: {
-                                gte: params.StartingEra,
+            'size': 0,
+            'query': {
+                'bool': {
+                    'filter': [
+                        {
+                            'match_phrase': {
+                                'reward_type': 'staking reward',
                             },
                         },
-                    },
+                        {
+                            range: {
+                                era: {
+                                    gte: params.StartingEra,
+                                },
+                            },
+                        },
+                    ],
                 },
             },
         };
