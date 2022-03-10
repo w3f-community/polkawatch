@@ -22,17 +22,17 @@ export class AboutData {
     @ApiResponseProperty()
     @Transform(({ value }) => value.value, { toClassOnly: true })
     @Expose({ name: 'total_eras' })
-        TotalEras: number;
+        Eras: number;
 
     @ApiResponseProperty()
     @Transform(({ value }) => value.value, { toClassOnly: true })
     @Expose({ name: 'total_rewards' })
-        TotalRewards: number;
+        RewardEvents: number;
 
     @ApiResponseProperty()
     @Transform(({ value }) => value.value, { toClassOnly: true })
     @Expose({ name: 'total_rewards_dot' })
-        TotalRewardsDot: number;
+        DotRewards: number;
 
     @ApiResponseProperty()
     @Transform(({ value }) => value.value, { toClassOnly: true })
