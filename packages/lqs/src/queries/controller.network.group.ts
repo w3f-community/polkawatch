@@ -16,7 +16,7 @@ export class NetworkProviderController extends BaseController {
         super(queryService);
     }
 
-    @Post('network/provider')
+    @Post('network/group')
     @ApiOperation({
         description: 'Get the distribution of DOT Rewards per Computing Network Provider',
     })
