@@ -11,16 +11,16 @@ import { plainToInstance } from 'class-transformer';
 
 @ApiTags('network')
 @Controller()
-export class NetworkProviderController extends BaseController {
+export class NetworkProviderGroup extends BaseController {
     constructor(protected queryService: IndexQueryService) {
         super(queryService);
     }
 
     @Post('network/group')
     @ApiOperation({
-        description: 'Get the distribution of DOT Rewards per Computing Network Provider',
+        description: 'Get the distribution of DOT Rewards per Computing Network Group',
     })
-    @ApiOkResponse({ description: 'The distribution of DOT Rewards per Computing Network Provider', type: RewardsByNetworkProvider, isArray: true })
+    @ApiOkResponse({ description: 'The distribution of DOT Rewards per Computing Network Group', type: RewardsByNetworkProvider, isArray: true })
     @HttpCode(HttpStatus.OK)
     async post(
         @Body() params: RewardDistributionQueryDto): Promise<Array<RewardsByNetworkProvider>> {

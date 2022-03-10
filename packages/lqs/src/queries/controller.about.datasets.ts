@@ -11,7 +11,7 @@ import { plainToInstance } from 'class-transformer';
 
 @ApiTags('about')
 @Controller()
-export class AboutDatasetController extends BaseController {
+export class AboutDataset extends BaseController {
     constructor(protected queryService: IndexQueryService) {
         super(queryService);
     }

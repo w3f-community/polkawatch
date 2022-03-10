@@ -11,7 +11,7 @@ import { plainToInstance } from 'class-transformer';
 
 @ApiTags('validator')
 @Controller()
-export class ValidatorGroupController extends BaseController {
+export class ValidatorGroup extends BaseController {
     constructor(protected queryService: IndexQueryService) {
         super(queryService);
     }

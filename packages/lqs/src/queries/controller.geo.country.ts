@@ -11,7 +11,7 @@ import { plainToInstance } from 'class-transformer';
 
 @ApiTags('geography')
 @Controller()
-export class GeoCountryController extends BaseController {
+export class GeoCountry extends BaseController {
     constructor(protected queryService: IndexQueryService) {
         super(queryService);
     }
