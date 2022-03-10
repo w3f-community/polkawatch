@@ -51,6 +51,17 @@ describe('LQS end-to-end testing', () => {
     });
 
     describe('E2E API Test', () => {
+
+        it('About Dataset', async () => {
+            await request(httpServer)
+                .post('/lqs/about/dataset')
+                .send({ StartingEra: 499 })
+                .then(async (response) => {
+                    expect(response.statusCode).toBe(200);
+                    expect(response).toSatisfyApiSpec();
+                });
+        });
+
         it('Geo Region', async () => {
             await request(httpServer)
                 .post('/lqs/geo/region')
@@ -69,9 +80,9 @@ describe('LQS end-to-end testing', () => {
                     expect(response).toSatisfyApiSpec();
                 });
         });
-        it('Network Provider', async () => {
+        it('Network Group', async () => {
             await request(httpServer)
-                .post('/lqs/network/provider')
+                .post('/lqs/network/group')
                 .send({ StartingEra: 500, TopResults: 3 })
                 .then(async (response) => {
                     expect(response.statusCode).toBe(200);
